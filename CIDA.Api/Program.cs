@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CidaDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection"));
+    options.UseOracle(builder.Configuration.GetConnectionString("FiapOracleConnection"));
 });
 
 builder.Services.ConfigureHealthChecks(builder.Configuration);

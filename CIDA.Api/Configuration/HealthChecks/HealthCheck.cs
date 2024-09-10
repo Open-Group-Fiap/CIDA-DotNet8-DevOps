@@ -8,15 +8,13 @@ public static class HealthCheck
         IConfiguration configuration)
     {
         
-        
-        
-            services.AddHealthChecks().AddSqlServer(
-                configuration.GetConnectionString("AzureConnection") ?? string.Empty, 
-                healthQuery: "SELECT 1", 
-                name: "SQL Server Health Check", 
+            services.AddHealthChecks().AddOracle(
+                configuration.GetConnectionString("OracleConnection") ?? string.Empty, 
+                healthQuery: "SELECT 1 FROM DUAL", 
+                name: "Oracle Health Check", 
                 failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"feedback", "database", "sqlserver"});
-        
+                tags: new[] {"feedback", "database", "oracle"});
+
 
         services.AddHealthChecksUI(opt =>
         {
