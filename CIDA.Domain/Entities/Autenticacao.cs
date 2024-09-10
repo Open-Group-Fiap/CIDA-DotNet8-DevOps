@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIDA.Domain.Entities;
+
 // Unique Key Email
 [Index(nameof(Email), IsUnique = true)]
 [Table("T_OP_AUTENTICACAO")]

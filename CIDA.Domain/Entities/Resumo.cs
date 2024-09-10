@@ -16,8 +16,6 @@ public class Resumo
     [Column("ID_USUARIO")]
     public int IdUsuario { get; set; }
 
-    public Usuario Usuario { get; set; }
-
     [Required]
     [Column("DATA_GERACAO", TypeName = "DATE")]
     public DateTime DataGeracao { get; set; }
@@ -26,8 +24,4 @@ public class Resumo
     [Column("DESCRICAO")]
     [StringLength(8000)]
     public string Descricao { get; set; }
-
-    // Relacionamento com Insights
-    public ICollection<Insight> Insights { get; set; }
-    public ICollection<Arquivo> Arquivos { get; set; }
 }

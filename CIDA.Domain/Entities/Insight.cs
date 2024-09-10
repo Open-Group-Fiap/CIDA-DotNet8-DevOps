@@ -26,8 +26,6 @@ public class Insight
     [Column("ID_RESUMO")]
     public int? IdResumo { get; set; }
 
-    public Resumo Resumo { get; set; }
-
     [Required]
     [Column("DATA_GERACAO", TypeName = "DATE")]
     public DateTime DataGeracao { get; set; }

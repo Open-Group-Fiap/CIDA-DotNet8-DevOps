@@ -2,6 +2,6 @@
 
 public enum TipoDocumento
 {
-    cpf,
-    cnpj
+    cpf = 0,
+    cnpj = 1
 }

@@ -26,8 +26,6 @@ public class Arquivo
     [Column("ID_RESUMO")]
     public int? IdResumo { get; set; }
 
-    public Resumo Resumo { get; set; }
-
     [Required]
     [Column("NOME")]
     [StringLength(255)]

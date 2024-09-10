@@ -7,6 +7,8 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +28,18 @@ builder.Services.AddSwaggerGen(options =>
         Title = "Cida API",
         Description = "Uma API para gerenciamento do banco de dados da CIDA",
     });
+    options.ExampleFilters();
 });
+
+builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(options => { 
+    app.UseSwaggerUI(options =>
+    {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         options.RoutePrefix = string.Empty;
     });
@@ -47,7 +53,6 @@ app.MapHealthChecks("/api/health", new HealthCheckOptions()
 app.UseHealthChecksUI(options => { options.UIPath = "/healthcheck-ui"; });
 
 app.MapUsuarioEndpoints();
+app.MapResumoEndpoints();
 
 app.Run();
-
-
