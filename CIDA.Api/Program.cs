@@ -12,8 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<CidaDbContext>(options =>
 {
-    if (BancoDeDadosSelecionado.BancoDeDadosOracle) options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection"));
-    else options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection"));
 });
 
 builder.Services.ConfigureHealthChecks(builder.Configuration);
