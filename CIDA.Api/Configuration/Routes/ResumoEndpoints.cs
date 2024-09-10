@@ -55,13 +55,17 @@ public static class ResumoEndpoints
 
         resumoGroup.MapGet("/email/{email}", async (CidaDbContext db, string email, int page = 1, int pagesize = 30) =>
             {
-                var autenticacao = await db.Autenticacoes.FirstOrDefaultAsync(a => a.Email == email);
-                if (autenticacao == null)
+                var autenticacaoDb = await db.Autenticacoes.FirstOrDefaultAsync(a => a.Email == email);
+                if (autenticacaoDb == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Email de usuário não encontrado");
                 }
 
-                var results = await db.Resumos.Where(r => r.IdUsuario == autenticacao.Usuario.IdUsuario).ToListAsync();
+                var idUsuario = await db.Usuarios.Where(u => u.IdAutenticacao == autenticacaoDb.IdAutenticacao)
+                    .Select(u => u.IdUsuario).FirstOrDefaultAsync();
+
+
+                var results = await db.Resumos.Where(r => r.IdUsuario == idUsuario).ToListAsync();
                 return Results.Ok(new ResumosListModel(
                     page,
                     pagesize,
@@ -106,6 +110,13 @@ public static class ResumoEndpoints
 
         resumoGroup.MapPut("/{id:int}", async (CidaDbContext db, int id, ResumoAddOrUpdateModel model) =>
             {
+                var usuario = await db.Usuarios.FindAsync(model.IdUsuario);
+                if (usuario == null)
+                {
+                    return Results.BadRequest("Usuario não encontrado");
+                }
+
+
                 var resumo = await db.Resumos.FindAsync(id);
                 if (resumo == null)
                 {

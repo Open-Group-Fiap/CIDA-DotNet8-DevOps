@@ -197,6 +197,13 @@ public static class UsuarioEndpoints
                     return Results.NotFound();
                 }
 
+                var autenticacao = await db.Autenticacoes.FindAsync(usuario.IdAutenticacao);
+                if (autenticacao == null)
+                {
+                    return Results.NotFound();
+                }
+
+                db.Autenticacoes.Remove(autenticacao);
                 db.Usuarios.Remove(usuario);
                 await db.SaveChangesAsync();
 

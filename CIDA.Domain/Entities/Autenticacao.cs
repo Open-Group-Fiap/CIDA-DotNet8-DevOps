@@ -23,6 +23,4 @@ public class Autenticacao
     [Column("HASH_SENHA")]
     [StringLength(255)]
     public string HashSenha { get; set; }
-
-    public Usuario Usuario { get; set; }
 }
