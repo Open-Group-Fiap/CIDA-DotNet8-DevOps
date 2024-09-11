@@ -28,6 +28,7 @@ public static class ResumoEndpoints
             })
             .Produces<ResumosListModel>()
             .WithName("GetResumos")
+            .WithTags("Resumo")
             .WithOpenApi();
 
         resumoGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
@@ -43,6 +44,7 @@ public static class ResumoEndpoints
             .Produces<Resumo>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetResumoById")
+            .WithTags("Resumo")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -75,6 +77,7 @@ public static class ResumoEndpoints
             .Produces<ResumosListModel>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetResumosByUsuarioEmail")
+            .WithTags("Resumo")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -94,7 +97,7 @@ public static class ResumoEndpoints
                 var resumo = new Resumo
                 {
                     IdUsuario = model.IdUsuario,
-                    DataGeracao = model.DataGeracao,
+                    DataGeracao = DateTime.Now,
                     Descricao = model.Descricao,
                 };
                 db.Resumos.Add(resumo);
@@ -104,6 +107,7 @@ public static class ResumoEndpoints
             .Accepts<ResumoAddOrUpdateModel>("application/json")
             .Produces<Resumo>(StatusCodes.Status201Created)
             .WithName("PostResumo")
+            .WithTags("Resumo")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(ResumoAddOrUpdateMetadata),
                 typeof(ResumoAddOrUpdateMetadata)))
             .WithOpenApi();
@@ -124,7 +128,6 @@ public static class ResumoEndpoints
                 }
 
                 resumo.IdUsuario = model.IdUsuario;
-                resumo.DataGeracao = model.DataGeracao;
                 resumo.Descricao = model.Descricao;
                 await db.SaveChangesAsync();
                 return Results.Ok(resumo);
@@ -132,6 +135,7 @@ public static class ResumoEndpoints
             .Produces<Resumo>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("PutResumo")
+            .WithTags("Resumo")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(ResumoAddOrUpdateMetadata),
                 typeof(ResumoAddOrUpdateMetadata)))
             .WithOpenApi();
@@ -151,6 +155,7 @@ public static class ResumoEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DeleteResumo")
+            .WithTags("Resumo")
             .WithOpenApi(
                 generatedOperation =>
                 {

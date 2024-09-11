@@ -43,6 +43,7 @@ public static class UsuarioEndpoints
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetUsuarioByEmail")
+            .WithTags("Usuario")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -66,6 +67,7 @@ public static class UsuarioEndpoints
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetUsuarioById")
+            .WithTags("Usuario")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -133,6 +135,7 @@ public static class UsuarioEndpoints
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(UsuarioAndAutenticacaoAddOrUpdateModel),
                 typeof(UsuarioAndAutenticacaoAddOrUpdateMetadata)))
             .WithName("AddUsuario")
+            .WithTags("Usuario")
             .WithDescription(
                 "Adiciona um novo usuário, o campo TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ) e o campo Status deve ser um dos seguintes valores: 0(Ativo), 1(Inativo)")
             .WithOpenApi();
@@ -185,6 +188,7 @@ public static class UsuarioEndpoints
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(UsuarioAndAutenticacaoAddOrUpdateModel),
                 typeof(UsuarioAndAutenticacaoAddOrUpdateMetadata)))
             .WithName("UpdateUsuario")
+            .WithTags("Usuario")
             .WithDescription(
                 "Atualiza um usuário, o campo TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ) e o campo Status deve ser um dos seguintes valores: 0(Ativo), 1(Inativo)")
             .WithOpenApi();
@@ -212,6 +216,7 @@ public static class UsuarioEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DeleteUsuario")
+            .WithTags("Usuario")
             .WithOpenApi(
                 generatedOperation =>
                 {

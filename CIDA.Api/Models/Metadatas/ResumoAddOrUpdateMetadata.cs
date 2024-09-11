@@ -9,7 +9,6 @@ public class ResumoAddOrUpdateMetadata() : IExamplesProvider<ResumoAddOrUpdateMo
         return new ResumoAddOrUpdateModel
         (
             1,
-            DateTime.Now,
             "Descrição do resumo"
         );
     }
