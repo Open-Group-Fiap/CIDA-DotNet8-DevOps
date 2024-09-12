@@ -34,12 +34,7 @@ public static class ResumoEndpoints
         resumoGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
             {
                 var resumo = await db.Resumos.FindAsync(id);
-                if (resumo == null)
-                {
-                    return Results.NotFound();
-                }
-
-                return Results.Ok(resumo);
+                return resumo == null ? Results.NotFound() : Results.Ok(resumo);
             })
             .Produces<Resumo>()
             .Produces(StatusCodes.Status404NotFound)

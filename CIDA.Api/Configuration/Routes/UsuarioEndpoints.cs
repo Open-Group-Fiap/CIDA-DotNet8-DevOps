@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 using CIDA.Api.Models;
 using CIDA.Api.Models.Metadatas;
 using Cida.Data;
@@ -6,11 +7,19 @@ using CIDA.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
+using System.Security.Cryptography;
 
 namespace CIDA.Api.Configuration.Routes;
 
 public static class UsuarioEndpoints
 {
+    private static string QuickHash(string input)
+    {
+        var inputBytes = Encoding.UTF8.GetBytes(input);
+        var inputHash = SHA256.HashData(inputBytes);
+        return Convert.ToHexString(inputHash);
+    }
+
     public static void MapUsuarioEndpoints(this WebApplication app)
     {
         var usuarioGroup = app.MapGroup("/usuario");
@@ -88,7 +97,7 @@ public static class UsuarioEndpoints
                     var autenticacao = new Autenticacao
                     {
                         Email = model.Email,
-                        HashSenha = model.Senha
+                        HashSenha = QuickHash(model.Senha)
                     };
 
                     var existingAutenticacao =
@@ -156,7 +165,7 @@ public static class UsuarioEndpoints
                     }
 
                     autenticacao.Email = model.Email;
-                    autenticacao.HashSenha = model.Senha;
+                    autenticacao.HashSenha = QuickHash(model.Senha);
                     db.Autenticacoes.Update(autenticacao);
                     await db.SaveChangesAsync();
 
