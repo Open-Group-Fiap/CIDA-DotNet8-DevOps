@@ -54,5 +54,6 @@ app.UseHealthChecksUI(options => { options.UIPath = "/healthcheck-ui"; });
 
 app.MapUsuarioEndpoints();
 app.MapResumoEndpoints();
-
+app.MapInsightEndpoints();
+app.MapLoginEndpoints();
 app.Run();
