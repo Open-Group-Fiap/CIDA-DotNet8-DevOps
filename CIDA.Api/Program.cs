@@ -1,11 +1,11 @@
-using System.Text.Json.Serialization;
-using CIDA.Api;
+using Azure.Storage.Blobs;
 using CIDA.Api.Configuration.HealthChecks;
 using CIDA.Api.Configuration.Routes;
 using Cida.Data;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Filters;
@@ -16,6 +16,13 @@ builder.Services.AddDbContext<CidaDbContext>(options =>
 {
     options.UseOracle(builder.Configuration.GetConnectionString("FiapOracleConnection"));
 });
+// add singleton azure blob service
+builder.Services.AddSingleton(x =>
+{
+    var connectionString = builder.Configuration.GetConnectionString("AzureStorage");
+    return new BlobServiceClient(connectionString);
+});
+
 
 builder.Services.ConfigureHealthChecks(builder.Configuration);
 
@@ -56,4 +63,5 @@ app.MapUsuarioEndpoints();
 app.MapResumoEndpoints();
 app.MapInsightEndpoints();
 app.MapLoginEndpoints();
+app.MapArquivoEndpoints();
 app.Run();
