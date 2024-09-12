@@ -24,7 +24,7 @@ public class Insight
     [Required]
     [ForeignKey("Resumo")]
     [Column("ID_RESUMO")]
-    public int? IdResumo { get; set; }
+    public int IdResumo { get; set; }
 
     [Required]
     [Column("DATA_GERACAO", TypeName = "DATE")]
