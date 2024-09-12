@@ -1,8 +1,10 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using CIDA.Api.Models;
+using CIDA.Api.Models.Metadatas;
 using Cida.Data;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace CIDA.Api.Configuration.Routes;
 
@@ -33,6 +35,8 @@ public static class LoginEndpoints
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("Autenticacao")
             .WithTags("Login")
+            .WithMetadata(new SwaggerRequestExampleAttribute(typeof(LoginRequestMetadata),
+                typeof(LoginRequestMetadata)))
             .WithOpenApi();
     }
 }
