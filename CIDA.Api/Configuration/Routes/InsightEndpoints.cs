@@ -15,7 +15,7 @@ public static class InsightEndpoints
 
         #region Queries
 
-        insightGroup.MapGet("/search", async (CidaDbContext db, int page = 1, int pagesize = 30) =>
+        insightGroup.MapGet("/search", (CidaDbContext db, int page = 1, int pagesize = 30) =>
             {
                 var skip = (page - 1) * pagesize;
                 var results = db.Insights.Skip(skip).Take(pagesize).ToList();

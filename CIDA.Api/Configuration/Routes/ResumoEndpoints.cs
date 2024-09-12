@@ -16,7 +16,7 @@ public static class ResumoEndpoints
 
         #region Queries
 
-        resumoGroup.MapGet("/search", async (CidaDbContext db, int page = 1, int pagesize = 30) =>
+        resumoGroup.MapGet("/search", (CidaDbContext db, int page = 1, int pagesize = 30) =>
             {
                 var skip = (page - 1) * pagesize;
                 var results = db.Resumos.Skip(skip).Take(pagesize).ToList();
