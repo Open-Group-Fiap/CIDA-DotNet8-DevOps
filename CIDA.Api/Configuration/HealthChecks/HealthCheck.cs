@@ -4,16 +4,15 @@ namespace CIDA.Api.Configuration.HealthChecks;
 
 public static class HealthCheck
 {
-    public static void ConfigureHealthChecks(this IServiceCollection services, 
+    public static void ConfigureHealthChecks(this IServiceCollection services,
         IConfiguration configuration)
     {
-        
-            services.AddHealthChecks().AddOracle(
-                configuration.GetConnectionString("OracleConnection") ?? string.Empty, 
-                healthQuery: "SELECT 1 FROM DUAL", 
-                name: "Oracle Health Check", 
-                failureStatus: HealthStatus.Unhealthy,
-                tags: new[] {"feedback", "database", "oracle"});
+        services.AddHealthChecks().AddOracle(
+            configuration.GetConnectionString("FiapOracleConnection") ?? string.Empty,
+            healthQuery: "SELECT 1 FROM DUAL",
+            name: "Oracle Health Check",
+            failureStatus: HealthStatus.Unhealthy,
+            tags: new[] { "feedback", "database", "oracle" });
 
 
         services.AddHealthChecksUI(opt =>
