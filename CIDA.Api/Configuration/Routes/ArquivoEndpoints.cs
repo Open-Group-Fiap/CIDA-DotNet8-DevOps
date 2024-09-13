@@ -15,8 +15,6 @@ public static class ArquivoEndpoints
 {
     public static void MapArquivoEndpoints(this WebApplication app)
     {
-        const string urlApi = "http://127.0.0.1:8000";
-
         var arquivoGroup = app.MapGroup("/arquivo");
 
         #region Queries
@@ -130,7 +128,8 @@ public static class ArquivoEndpoints
 
         arquivoGroup.MapPost("/idUsuario/{idUsuario:int}/upload",
                 async ([Required] IFormFileCollection arquivosRequest, int idUsuario, CidaDbContext db,
-                    IConfiguration configuration, BlobServiceClient blobServiceClient, HttpClient httpClient) =>
+                    BlobServiceClient blobServiceClient, HttpClient httpClient,
+                    IConfiguration configuration) =>
                 {
                     //possibles types
                     var possiblesTypes = new List<string>
@@ -167,7 +166,6 @@ public static class ArquivoEndpoints
                     // Create the container and return a container client object
                     BlobContainerClient containerClient =
                         await blobServiceClient.CreateBlobContainerAsync(containerName, PublicAccessType.BlobContainer);
-
 
                     var arquivos = new List<Arquivo>();
 
@@ -207,21 +205,22 @@ public static class ArquivoEndpoints
                     var arquivosResponse = new ArquivosListModel(1, arquivos.Count, arquivos.Count, arquivos);
 
                     //Send request to analyse (python api)
-                    /*
+                    var urlApi = configuration["PythonApi:Url"];
+                    Console.WriteLine("\n\n\n\n\n\n\n");
+                    Console.WriteLine(containerClient.Uri.AbsoluteUri);
+                    Console.WriteLine("\n\n\n\n\n\n\n");
                     var response = await httpClient.PostAsJsonAsync($"{urlApi}/analyze", new
                     {
-                        containerClient.Uri,
-                        arquivosNomes,
-                        idUsuario,
-                        idsArquivos
+                        container = containerClient.Uri.AbsoluteUri,
+                        file_names = arquivosNomes,
+                        id_usuario = idUsuario,
+                        ids_arquivos = idsArquivos
                     });
 
 
                     return !response.IsSuccessStatusCode
                         ? Results.BadRequest("Erro ao enviar arquivos para análise")
                         : Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
-                        */
-                    return Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
                 })
             .DisableAntiforgery()
             .Accepts<IFormFileCollection>("multipart/form-data")
