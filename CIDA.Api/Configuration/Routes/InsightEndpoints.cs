@@ -97,6 +97,12 @@ public static class InsightEndpoints
                     return Results.BadRequest("Resumo não encontrado");
                 }
 
+                var insightDb = await db.Insights.FirstOrDefaultAsync(x => x.IdResumo == model.IdResumo);
+                if (insightDb != null)
+                {
+                    return Results.BadRequest("Já existe um insight para esse resumo");
+                }
+
                 var insight = model.MapToInsight();
                 db.Insights.Add(insight);
                 await db.SaveChangesAsync();
@@ -130,6 +136,15 @@ public static class InsightEndpoints
                 if (resumo == null)
                 {
                     return Results.BadRequest("Resumo não encontrado");
+                }
+
+                if (insightDb.IdResumo != model.IdResumo)
+                {
+                    var insightExists = await db.Insights.FirstOrDefaultAsync(x => x.IdResumo == model.IdResumo);
+                    if (insightExists != null)
+                    {
+                        return Results.BadRequest("Já existe um insight para esse resumo");
+                    }
                 }
 
                 var insight = model.MapToInsightUpdate(insightDb);

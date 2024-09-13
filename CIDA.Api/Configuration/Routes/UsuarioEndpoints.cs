@@ -68,6 +68,25 @@ public static class UsuarioEndpoints
         usuarioGroup.MapPost("/",
                 async ([FromBody, Required] UsuarioAndAutenticacaoAddOrUpdateModel model, CidaDbContext db) =>
                 {
+                    if (!model.TipoDocumento.Equals(TipoDocumento.CPF) &&
+                        !model.TipoDocumento.Equals(TipoDocumento.CNPJ))
+                    {
+                        return Results.BadRequest("TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ)");
+                    }
+
+                    if (!model.Status.Equals(Status.ativo) && !model.Status.Equals(Status.inativo))
+                    {
+                        return Results.BadRequest("Status deve ser um dos seguintes valores: 0(ativo), 1(inativo)");
+                    }
+
+                    var numDocumentoExists = await db.Usuarios
+                        .Where(u => u.NumDocumento == model.NumDocumento)
+                        .FirstOrDefaultAsync();
+                    if (numDocumentoExists != null)
+                    {
+                        return Results.BadRequest("Número de documento já cadastrado");
+                    }
+
                     var autenticacao = model.MapToAutenticacao();
 
                     var existingAutenticacao =
@@ -96,16 +115,38 @@ public static class UsuarioEndpoints
             .WithName("AddUsuario")
             .WithTags("Usuario")
             .WithDescription(
-                "Adiciona um novo usuário, o campo TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ) e o campo Status deve ser um dos seguintes valores: 0(Ativo), 1(Inativo)")
+                "Adiciona um novo usuário, o campo TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ) e o campo Status deve ser um dos seguintes valores: 0(ativo), 1(inativo)")
             .WithOpenApi();
 
         usuarioGroup.MapPut("/{id:int}",
                 async (int id, [FromBody, Required] UsuarioAndAutenticacaoAddOrUpdateModel model, CidaDbContext db) =>
                 {
+                    if (!model.TipoDocumento.Equals(TipoDocumento.CPF) &&
+                        !model.TipoDocumento.Equals(TipoDocumento.CNPJ))
+                    {
+                        return Results.BadRequest("TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ)");
+                    }
+
+                    if (!model.Status.Equals(Status.ativo) && !model.Status.Equals(Status.inativo))
+                    {
+                        return Results.BadRequest("Status deve ser um dos seguintes valores: 0(ativo), 1(inativo)");
+                    }
+
                     var usuario = await db.Usuarios.FindAsync(id);
                     if (usuario == null)
                     {
                         return Results.NotFound("Usuário não encontrado");
+                    }
+
+                    if (usuario.NumDocumento != model.NumDocumento)
+                    {
+                        var numDocumentoExists = await db.Usuarios
+                            .Where(u => u.NumDocumento == model.NumDocumento)
+                            .FirstOrDefaultAsync();
+                        if (numDocumentoExists != null)
+                        {
+                            return Results.BadRequest("Número de documento já cadastrado");
+                        }
                     }
 
                     var autenticacao = await db.Autenticacoes.FindAsync(usuario.IdAutenticacao);
@@ -114,12 +155,17 @@ public static class UsuarioEndpoints
                         return Results.NotFound("Autenticação não encontrada");
                     }
 
-                    autenticacao = model.MapToAutenticacaoUpdate(autenticacao);
+                    autenticacao.Email = model.Email;
+                    autenticacao.HashSenha = AutenticacaoService.QuickHash(model.Senha);
 
                     db.Autenticacoes.Update(autenticacao);
                     await db.SaveChangesAsync();
 
-                    usuario = model.MapToUsuarioUpdate(usuario);
+                    usuario.Nome = model.Nome;
+                    usuario.NumDocumento = model.NumDocumento;
+                    usuario.Status = model.Status;
+                    usuario.Telefone = model.Telefone;
+                    usuario.TipoDocumento = model.TipoDocumento;
 
                     db.Usuarios.Update(usuario);
                     await db.SaveChangesAsync();
@@ -134,7 +180,7 @@ public static class UsuarioEndpoints
             .WithName("UpdateUsuario")
             .WithTags("Usuario")
             .WithDescription(
-                "Atualiza um usuário, o campo TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ) e o campo Status deve ser um dos seguintes valores: 0(Ativo), 1(Inativo)")
+                "Atualiza um usuário, o campo TipoDocumento deve ser um dos seguintes valores: 0(CPF), 1(CNPJ) e o campo Status deve ser um dos seguintes valores: 0(ativo), 1(inativo)")
             .WithOpenApi();
 
         usuarioGroup.MapDelete("/{id:int}", async ([Required] int id, CidaDbContext db) =>

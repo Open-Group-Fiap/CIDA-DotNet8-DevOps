@@ -7,7 +7,7 @@ namespace CIDA.Api.Services;
 
 public static class AutenticacaoService
 {
-    private static string QuickHash(string input)
+    public static string QuickHash(string input)
     {
         var inputBytes = Encoding.UTF8.GetBytes(input);
         var inputHash = SHA256.HashData(inputBytes);
@@ -19,15 +19,6 @@ public static class AutenticacaoService
         return new Autenticacao()
         {
             Email = model.Email, HashSenha = QuickHash(model.Senha)
-        };
-    }
-
-    public static Autenticacao MapToAutenticacaoUpdate(this UsuarioAndAutenticacaoAddOrUpdateModel model,
-        Autenticacao autenticacao)
-    {
-        return new Autenticacao()
-        {
-            Email = model.Email, HashSenha = QuickHash(model.Senha), IdAutenticacao = autenticacao.IdAutenticacao
         };
     }
 }
