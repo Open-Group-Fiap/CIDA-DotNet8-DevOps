@@ -34,6 +34,7 @@ public static class ArquivoEndpoints
             .Produces<ArquivosListModel>()
             .WithName("GetArquivos")
             .WithTags("Arquivo")
+            .WithDescription("Retorna todos os arquivos por paginação")
             .WithOpenApi();
 
         arquivoGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
@@ -45,6 +46,7 @@ public static class ArquivoEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetArquivoById")
             .WithTags("Arquivo")
+            .WithDescription("Retorna um arquivo por id")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -79,6 +81,7 @@ public static class ArquivoEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetArquivoByEmail")
             .WithTags("Arquivo")
+            .WithDescription("Retorna todos os arquivos de um usuário por email por paginação")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -111,6 +114,7 @@ public static class ArquivoEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetArquivoByIdUsuario")
             .WithTags("Arquivo")
+            .WithDescription("Retorna todos os arquivos de um usuário por id por paginação")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -143,12 +147,11 @@ public static class ArquivoEndpoints
                         return Results.BadRequest("Nenhum arquivo foi enviado");
                     }
 
-                    foreach (var file in arquivosRequest)
+                    // Designed by the IDE
+                    if (arquivosRequest.Any(file =>
+                            !possiblesTypes.Contains(file.ContentType) || file.Length > 2097152))
                     {
-                        if (!possiblesTypes.Contains(file.ContentType) || file.Length > 2097152)
-                        {
-                            return Results.BadRequest("Tipo de arquivo não permitido");
-                        }
+                        return Results.BadRequest("Tipo de arquivo não permitido");
                     }
 
 
@@ -226,6 +229,7 @@ public static class ArquivoEndpoints
             .Produces<ArquivosListModel>(StatusCodes.Status201Created)
             .WithName("PostArquivo")
             .WithTags("Arquivo")
+            .WithDescription("Envia arquivos para serem analisados")
             .WithOpenApi();
 
         arquivoGroup.MapPut("/{id:int}", async (int id, CidaDbContext db, ArquivoUpdateModel model) =>
@@ -247,12 +251,14 @@ public static class ArquivoEndpoints
                 await db.SaveChangesAsync();
                 return Results.Ok(arquivo);
             })
+            .Accepts<ArquivoUpdateModel>("application/json")
             .Produces(StatusCodes.Status400BadRequest)
             .Produces<Arquivo>()
             .WithName("PutArquivo")
             .WithTags("Arquivo")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(ArquivoUpdateModel),
                 typeof(ArquivoUpdateMetadata)))
+            .WithDescription("Atualiza o resumo de um arquivo")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -286,6 +292,7 @@ public static class ArquivoEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DeleteArquivo")
             .WithTags("Arquivo")
+            .WithDescription("Deleta um arquivo")
             .WithOpenApi(
                 generatedOperation =>
                 {

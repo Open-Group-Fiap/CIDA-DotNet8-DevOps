@@ -22,16 +22,6 @@ public static class UsuarioEndpoints
             {
                 var usuario = await db.Usuarios
                     .Where(u => u.Autenticacao.Email == email)
-                    .Select(u => new
-                    {
-                        u.IdUsuario,
-                        u.Nome,
-                        u.TipoDocumento,
-                        u.NumDocumento,
-                        u.Telefone,
-                        u.DataCriacao,
-                        u.Status
-                    })
                     .FirstOrDefaultAsync();
 
                 return usuario == null ? Results.NotFound("Nenhum usuario encontrado") : Results.Ok(usuario);
@@ -39,6 +29,7 @@ public static class UsuarioEndpoints
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetUsuarioByEmail")
+            .WithDescription("Retorna um usuário por email")
             .WithTags("Usuario")
             .WithOpenApi(
                 generatedOperation =>
@@ -59,6 +50,7 @@ public static class UsuarioEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetUsuarioById")
             .WithTags("Usuario")
+            .WithDescription("Retorna um usuário por id")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -134,9 +126,9 @@ public static class UsuarioEndpoints
 
                     return Results.Ok(usuario);
                 })
+            .Accepts<UsuarioAndAutenticacaoAddOrUpdateModel>("application/json")
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
-            .Accepts<UsuarioAndAutenticacaoAddOrUpdateModel>("application/json")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(UsuarioAndAutenticacaoAddOrUpdateModel),
                 typeof(UsuarioAndAutenticacaoAddOrUpdateMetadata)))
             .WithName("UpdateUsuario")
@@ -168,6 +160,7 @@ public static class UsuarioEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DeleteUsuario")
+            .WithDescription("Deleta um usuário")
             .WithTags("Usuario")
             .WithOpenApi(
                 generatedOperation =>

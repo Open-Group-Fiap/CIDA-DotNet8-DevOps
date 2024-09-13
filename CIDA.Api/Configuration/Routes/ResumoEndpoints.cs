@@ -28,6 +28,7 @@ public static class ResumoEndpoints
             })
             .Produces<ResumosListModel>()
             .WithName("GetResumos")
+            .WithDescription("Retorna uma lista de resumos por paginação")
             .WithTags("Resumo")
             .WithOpenApi();
 
@@ -40,6 +41,7 @@ public static class ResumoEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetResumoById")
             .WithTags("Resumo")
+            .WithDescription("Retorna um resumo por id")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -73,6 +75,7 @@ public static class ResumoEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetResumosByUsuarioEmail")
             .WithTags("Resumo")
+            .WithDescription("Retorna uma lista de resumos por email de usuário por paginação")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -99,6 +102,7 @@ public static class ResumoEndpoints
             .Produces<Resumo>(StatusCodes.Status201Created)
             .WithName("PostResumo")
             .WithTags("Resumo")
+            .WithDescription("Cria um resumo")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(ResumoAddOrUpdateMetadata),
                 typeof(ResumoAddOrUpdateMetadata)))
             .WithOpenApi();
@@ -123,9 +127,11 @@ public static class ResumoEndpoints
                 await db.SaveChangesAsync();
                 return Results.Ok(resumo);
             })
+            .Accepts<ResumoAddOrUpdateModel>("application/json")
             .Produces<Resumo>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("PutResumo")
+            .WithDescription("Atualiza um resumo")
             .WithTags("Resumo")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(ResumoAddOrUpdateMetadata),
                 typeof(ResumoAddOrUpdateMetadata)))
@@ -146,6 +152,7 @@ public static class ResumoEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithName("DeleteResumo")
+            .WithDescription("Deleta um resumo")
             .WithTags("Resumo")
             .WithOpenApi(
                 generatedOperation =>

@@ -31,10 +31,12 @@ public static class LoginEndpoints
 
                 return QuickHash(request.Senha) == autenticacao.HashSenha ? Results.Ok() : Results.Unauthorized();
             })
+            .Accepts<LoginRequest>("application/json")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
             .WithName("Autenticacao")
             .WithTags("Login")
+            .WithDescription("Autentica um usuário")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(LoginRequestMetadata),
                 typeof(LoginRequestMetadata)))
             .WithOpenApi();

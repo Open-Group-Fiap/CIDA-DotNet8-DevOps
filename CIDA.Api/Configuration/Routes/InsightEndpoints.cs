@@ -29,6 +29,7 @@ public static class InsightEndpoints
             .Produces<InsightsListModel>()
             .WithName("GetInsights")
             .WithTags("Insight")
+            .WithDescription("Retorna uma lista de insights por paginação")
             .WithOpenApi();
 
         insightGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
@@ -39,6 +40,7 @@ public static class InsightEndpoints
             .Produces<Insight>()
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInsightById")
+            .WithDescription("Retorna um insight por id")
             .WithTags("Insight")
             .WithOpenApi(
                 generatedOperation =>
@@ -66,6 +68,7 @@ public static class InsightEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithName("GetInsightByEmail")
             .WithTags("Insight")
+            .WithDescription("Retorna um insight por email")
             .WithOpenApi(
                 generatedOperation =>
                 {
@@ -99,9 +102,11 @@ public static class InsightEndpoints
                 await db.SaveChangesAsync();
                 return Results.Created($"/insight/{insight.IdInsight}", insight);
             })
+            .Accepts<InsightAddOrUpdateModel>("application/json")
             .Produces(StatusCodes.Status400BadRequest)
             .Produces<Insight>(StatusCodes.Status201Created)
             .WithName("CreateInsight")
+            .WithDescription("Cria um novo insight")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(InsightAddOrUpdateMetadata),
                 typeof(InsightAddOrUpdateMetadata)))
             .WithTags("Insight")
@@ -132,10 +137,12 @@ public static class InsightEndpoints
                 await db.SaveChangesAsync();
                 return Results.Ok(insight);
             })
+            .Accepts<InsightAddOrUpdateModel>("application/json")
             .Produces(StatusCodes.Status400BadRequest)
             .Produces<Insight>()
             .WithName("PutInsight")
             .WithTags("Insight")
+            .WithDescription("Altera um insight")
             .WithMetadata(new SwaggerRequestExampleAttribute(typeof(InsightAddOrUpdateMetadata),
                 typeof(InsightAddOrUpdateMetadata)))
             .WithOpenApi(
@@ -164,6 +171,7 @@ public static class InsightEndpoints
             .Produces<Insight>(StatusCodes.Status204NoContent)
             .WithName("DeleteInsight")
             .WithTags("Insight")
+            .WithDescription("Deleta um insight")
             .WithOpenApi(
                 generatedOperation =>
                 {
