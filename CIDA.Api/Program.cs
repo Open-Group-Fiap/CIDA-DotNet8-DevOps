@@ -12,10 +12,17 @@ using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
+#region Database
+
 builder.Services.AddDbContext<CidaDbContext>(options =>
 {
     options.UseOracle(builder.Configuration.GetConnectionString("FiapOracleConnection"));
 });
+
+#endregion
+
+#region Azure Blob Storage
+
 // add singleton azure blob service
 builder.Services.AddSingleton(x =>
 {
@@ -23,8 +30,15 @@ builder.Services.AddSingleton(x =>
     return new BlobServiceClient(connectionString);
 });
 
+#endregion
 
+// add HttpClient
+builder.Services.AddHttpClient();
+
+// HealthChecks
 builder.Services.ConfigureHealthChecks(builder.Configuration);
+
+#region Swagger Configuration
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -37,8 +51,9 @@ builder.Services.AddSwaggerGen(options =>
     });
     options.ExampleFilters();
 });
-
 builder.Services.AddSwaggerExamplesFromAssemblyOf<Program>();
+
+#endregion
 
 var app = builder.Build();
 

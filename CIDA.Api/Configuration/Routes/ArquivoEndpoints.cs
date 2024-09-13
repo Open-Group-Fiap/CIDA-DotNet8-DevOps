@@ -15,6 +15,8 @@ public static class ArquivoEndpoints
 {
     public static void MapArquivoEndpoints(this WebApplication app)
     {
+        const string urlApi = "http://127.0.0.1:8000";
+
         var arquivoGroup = app.MapGroup("/arquivo");
 
         #region Queries
@@ -37,7 +39,7 @@ public static class ArquivoEndpoints
         arquivoGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
             {
                 var arquivo = await db.Arquivos.FindAsync(id);
-                return arquivo == null ? Results.NotFound() : Results.Ok(arquivo);
+                return arquivo == null ? Results.NotFound("Arquivo não encontrado") : Results.Ok(arquivo);
             })
             .Produces<Arquivo>()
             .Produces(StatusCodes.Status404NotFound)
@@ -59,7 +61,7 @@ public static class ArquivoEndpoints
                     var usuario = await db.Usuarios.FirstOrDefaultAsync(x => x.Autenticacao.Email == email);
                     if (usuario == null)
                     {
-                        return Results.NotFound();
+                        return Results.NotFound("Email do usuário não existe");
                     }
 
                     var skip = (page - 1) * pagesize;
@@ -70,7 +72,7 @@ public static class ArquivoEndpoints
 
 
                     return arquivos.Count == 0
-                        ? Results.NotFound()
+                        ? Results.NotFound("Nenhum arquivo encontrado")
                         : Results.Ok(new ArquivosListModel(page, pagesize, arquivos.Count, arquivos));
                 })
             .Produces<ArquivosListModel>()
@@ -102,7 +104,7 @@ public static class ArquivoEndpoints
                         .ToListAsync();
 
                     return arquivos.Count == 0
-                        ? Results.NotFound()
+                        ? Results.NotFound("Nenhum arquivo encontrado")
                         : Results.Ok(new ArquivosListModel(page, pagesize, arquivos.Count, arquivos));
                 })
             .Produces<ArquivosListModel>()
@@ -124,7 +126,7 @@ public static class ArquivoEndpoints
 
         arquivoGroup.MapPost("/idUsuario/{idUsuario:int}/upload",
                 async ([Required] IFormFileCollection arquivosRequest, int idUsuario, CidaDbContext db,
-                    IConfiguration configuration, BlobServiceClient blobServiceClient) =>
+                    IConfiguration configuration, BlobServiceClient blobServiceClient, HttpClient httpClient) =>
                 {
                     //possibles types
                     var possiblesTypes = new List<string>
@@ -166,6 +168,8 @@ public static class ArquivoEndpoints
 
                     var arquivos = new List<Arquivo>();
 
+                    var arquivosNomes = new List<string>();
+
                     foreach (var file in arquivosRequest)
                     {
                         //Create a unique name for the file
@@ -181,7 +185,7 @@ public static class ArquivoEndpoints
                         var arquivo = new Arquivo
                         {
                             IdUsuario = idUsuario,
-                            Nome = file.FileName,
+                            Nome = filename,
                             Url = blobClient.Uri.ToString(),
                             DataUpload = DateTime.Now,
                             Extensao = file.ContentType,
@@ -189,18 +193,32 @@ public static class ArquivoEndpoints
                         };
 
                         arquivos.Add(arquivo);
+                        arquivosNomes.Add(filename);
                     }
 
                     await db.Arquivos.AddRangeAsync(arquivos);
                     await db.SaveChangesAsync();
 
-                    var ArquivosResponse = new ArquivosListModel(1, arquivos.Count, arquivos.Count, arquivos);
+                    var idsArquivos = arquivos.Select(x => x.IdArquivo).ToList();
 
-                    //TODO: Cauã SEND A REQUEST FOR PYTHON API TO PROCESS THE FILE 
-                    //OBS: send the id Usuario for you can send the resume and the insight with the idUsuario
-                    //OBS2: in Python API you need to make a PUT to update the arquivo with the id resume when you create
+                    var arquivosResponse = new ArquivosListModel(1, arquivos.Count, arquivos.Count, arquivos);
 
-                    return Results.Created($"/arquivo/idUsuario/{idUsuario}/search", ArquivosResponse);
+                    //Send request to analyse (python api)
+                    /*
+                    var response = await httpClient.PostAsJsonAsync($"{urlApi}/analyze", new
+                    {
+                        containerClient.Uri,
+                        arquivosNomes,
+                        idUsuario,
+                        idsArquivos
+                    });
+
+
+                    return !response.IsSuccessStatusCode
+                        ? Results.BadRequest("Erro ao enviar arquivos para análise")
+                        : Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
+                        */
+                    return Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
                 })
             .DisableAntiforgery()
             .Accepts<IFormFileCollection>("multipart/form-data")
@@ -215,13 +233,13 @@ public static class ArquivoEndpoints
                 var resumo = await db.Resumos.FindAsync(model.IdResumo);
                 if (resumo == null)
                 {
-                    return Results.BadRequest("Resumo não encontrado");
+                    return Results.BadRequest("Não existe resumo com o id informado");
                 }
 
                 var arquivo = await db.Arquivos.FindAsync(id);
                 if (arquivo == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Arquivo não encontrado");
                 }
 
                 arquivo.IdResumo = model.IdResumo;
@@ -251,7 +269,7 @@ public static class ArquivoEndpoints
                     var arquivo = await db.Arquivos.FindAsync(id);
                     if (arquivo == null)
                     {
-                        return Results.NotFound();
+                        return Results.NotFound("Arquivo não encontrado");
                     }
 
                     // delete container and all blobs

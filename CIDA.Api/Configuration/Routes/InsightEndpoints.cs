@@ -1,5 +1,6 @@
 ﻿using CIDA.Api.Models;
 using CIDA.Api.Models.Metadatas;
+using CIDA.Api.Services;
 using Cida.Data;
 using CIDA.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ public static class InsightEndpoints
         insightGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
             {
                 var insight = await db.Insights.FindAsync(id);
-                return insight == null ? Results.NotFound() : Results.Ok(insight);
+                return insight == null ? Results.NotFound("Insight não encontrado") : Results.Ok(insight);
             })
             .Produces<Insight>()
             .Produces(StatusCodes.Status404NotFound)
@@ -54,12 +55,12 @@ public static class InsightEndpoints
                 var usuario = await db.Usuarios.FirstOrDefaultAsync(x => x.Autenticacao.Email == email);
                 if (usuario == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Usuário não encontrado");
                 }
 
                 var insight = await db.Insights.FirstOrDefaultAsync(x => x.IdUsuario == usuario.IdUsuario);
 
-                return insight == null ? Results.NotFound() : Results.Ok(insight);
+                return insight == null ? Results.NotFound("Nenhum insight encontrado") : Results.Ok(insight);
             })
             .Produces<Insight>()
             .Produces(StatusCodes.Status404NotFound)
@@ -79,16 +80,21 @@ public static class InsightEndpoints
 
         #region Commands
 
-        insightGroup.MapPost("/", async (CidaDbContext db, Insight InsightAddOrUpdateModel) =>
+        insightGroup.MapPost("/", async (CidaDbContext db, InsightAddOrUpdateModel model) =>
             {
-                var insight = new Insight
+                var usuario = await db.Usuarios.FindAsync(model.IdUsuario);
+                if (usuario == null)
                 {
-                    IdUsuario = InsightAddOrUpdateModel.IdUsuario,
-                    IdResumo = InsightAddOrUpdateModel.IdResumo,
-                    Descricao = InsightAddOrUpdateModel.Descricao,
-                    DataGeracao = DateTime.Now
-                };
+                    return Results.BadRequest("Usuário não encontrado");
+                }
 
+                var resumo = await db.Resumos.FindAsync(model.IdResumo);
+                if (resumo == null)
+                {
+                    return Results.BadRequest("Resumo não encontrado");
+                }
+
+                var insight = model.MapToInsight();
                 db.Insights.Add(insight);
                 await db.SaveChangesAsync();
                 return Results.Created($"/insight/{insight.IdInsight}", insight);
@@ -101,18 +107,27 @@ public static class InsightEndpoints
             .WithTags("Insight")
             .WithOpenApi();
 
-        insightGroup.MapPut("/{id:int}", async (CidaDbContext db, int id, Insight InsightAddOrUpdateModel) =>
+        insightGroup.MapPut("/{id:int}", async (CidaDbContext db, int id, InsightAddOrUpdateModel model) =>
             {
-                var insight = await db.Insights.FindAsync(id);
-                if (insight == null)
+                var insightDb = await db.Insights.FindAsync(id);
+                if (insightDb == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Insight não encontrado");
                 }
 
-                insight.IdUsuario = InsightAddOrUpdateModel.IdUsuario;
-                insight.IdResumo = InsightAddOrUpdateModel.IdResumo;
-                insight.Descricao = InsightAddOrUpdateModel.Descricao;
-                insight.DataGeracao = DateTime.Now;
+                var usuario = await db.Usuarios.FindAsync(model.IdUsuario);
+                if (usuario == null)
+                {
+                    return Results.BadRequest("Usuário não encontrado");
+                }
+
+                var resumo = await db.Resumos.FindAsync(model.IdResumo);
+                if (resumo == null)
+                {
+                    return Results.BadRequest("Resumo não encontrado");
+                }
+
+                var insight = model.MapToInsightUpdate(insightDb);
 
                 await db.SaveChangesAsync();
                 return Results.Ok(insight);
@@ -138,7 +153,7 @@ public static class InsightEndpoints
                 var insight = await db.Insights.FindAsync(id);
                 if (insight == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Insight não encontrado");
                 }
 
                 db.Insights.Remove(insight);

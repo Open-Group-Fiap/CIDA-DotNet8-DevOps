@@ -29,7 +29,7 @@ public static class LoginEndpoints
                     return Results.Unauthorized();
                 }
 
-                return QuickHash(request.Senha) != autenticacao.HashSenha ? Results.NotFound() : Results.Ok();
+                return QuickHash(request.Senha) == autenticacao.HashSenha ? Results.Ok() : Results.Unauthorized();
             })
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)

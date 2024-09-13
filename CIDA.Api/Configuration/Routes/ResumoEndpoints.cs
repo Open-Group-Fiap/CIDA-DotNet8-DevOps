@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using CIDA.Api.Models;
+﻿using CIDA.Api.Models;
 using CIDA.Api.Models.Metadatas;
+using CIDA.Api.Services;
 using Cida.Data;
 using CIDA.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +34,7 @@ public static class ResumoEndpoints
         resumoGroup.MapGet("/{id:int}", async (CidaDbContext db, int id) =>
             {
                 var resumo = await db.Resumos.FindAsync(id);
-                return resumo == null ? Results.NotFound() : Results.Ok(resumo);
+                return resumo == null ? Results.NotFound("Resumo não encontrado") : Results.Ok(resumo);
             })
             .Produces<Resumo>()
             .Produces(StatusCodes.Status404NotFound)
@@ -89,12 +89,8 @@ public static class ResumoEndpoints
 
         resumoGroup.MapPost("/", async (CidaDbContext db, ResumoAddOrUpdateModel model) =>
             {
-                var resumo = new Resumo
-                {
-                    IdUsuario = model.IdUsuario,
-                    DataGeracao = DateTime.Now,
-                    Descricao = model.Descricao,
-                };
+                var resumo = model.MapToInsight();
+
                 db.Resumos.Add(resumo);
                 await db.SaveChangesAsync();
                 return Results.Created($"/resumo/{resumo.IdResumo}", resumo);
@@ -116,14 +112,14 @@ public static class ResumoEndpoints
                 }
 
 
-                var resumo = await db.Resumos.FindAsync(id);
-                if (resumo == null)
+                var resumoDb = await db.Resumos.FindAsync(id);
+                if (resumoDb == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Resumo não encontrado");
                 }
 
-                resumo.IdUsuario = model.IdUsuario;
-                resumo.Descricao = model.Descricao;
+                var resumo = model.MapToInsightWithoutDate();
+
                 await db.SaveChangesAsync();
                 return Results.Ok(resumo);
             })
@@ -140,7 +136,7 @@ public static class ResumoEndpoints
                 var resumo = await db.Resumos.FindAsync(id);
                 if (resumo == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Resumo não encontrado");
                 }
 
                 db.Resumos.Remove(resumo);

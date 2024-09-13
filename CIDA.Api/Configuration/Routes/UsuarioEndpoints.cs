@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text;
 using CIDA.Api.Models;
 using CIDA.Api.Models.Metadatas;
 using Cida.Data;
@@ -7,19 +6,12 @@ using CIDA.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
-using System.Security.Cryptography;
+using CIDA.Api.Services;
 
 namespace CIDA.Api.Configuration.Routes;
 
 public static class UsuarioEndpoints
 {
-    private static string QuickHash(string input)
-    {
-        var inputBytes = Encoding.UTF8.GetBytes(input);
-        var inputHash = SHA256.HashData(inputBytes);
-        return Convert.ToHexString(inputHash);
-    }
-
     public static void MapUsuarioEndpoints(this WebApplication app)
     {
         var usuarioGroup = app.MapGroup("/usuario");
@@ -42,12 +34,7 @@ public static class UsuarioEndpoints
                     })
                     .FirstOrDefaultAsync();
 
-                if (usuario == null)
-                {
-                    return Results.NotFound();
-                }
-
-                return Results.Ok(usuario);
+                return usuario == null ? Results.NotFound("Nenhum usuario encontrado") : Results.Ok(usuario);
             })
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
@@ -66,12 +53,7 @@ public static class UsuarioEndpoints
         usuarioGroup.MapGet("/{id:int}", async ([Required] int id, CidaDbContext db) =>
             {
                 var usuario = await db.Usuarios.FindAsync(id);
-                if (usuario == null)
-                {
-                    return Results.NotFound();
-                }
-
-                return Results.Ok(usuario);
+                return usuario == null ? Results.NotFound("Nenhum usuario encontrado") : Results.Ok(usuario);
             })
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
@@ -94,49 +76,25 @@ public static class UsuarioEndpoints
         usuarioGroup.MapPost("/",
                 async ([FromBody, Required] UsuarioAndAutenticacaoAddOrUpdateModel model, CidaDbContext db) =>
                 {
-                    var autenticacao = new Autenticacao
-                    {
-                        Email = model.Email,
-                        HashSenha = QuickHash(model.Senha)
-                    };
+                    var autenticacao = model.MapToAutenticacao();
 
                     var existingAutenticacao =
                         await db.Autenticacoes.Where(a => a.Email == model.Email).FirstOrDefaultAsync();
                     if (existingAutenticacao != null)
                     {
-                        return Results.BadRequest("Já existe um usuário com o email informado");
+                        return Results.BadRequest("Email já cadastrado");
                     }
 
                     db.Autenticacoes.Add(autenticacao);
                     await db.SaveChangesAsync();
 
 
-                    var usuario = new Usuario
-                    {
-                        IdAutenticacao = autenticacao.IdAutenticacao,
-                        Nome = model.Nome,
-                        TipoDocumento = model.TipoDocumento,
-                        NumDocumento = model.NumDocumento,
-                        Telefone = model.Telefone,
-                        DataCriacao = model.DataCriacao,
-                        Status = model.Status
-                    };
+                    var usuario = model.MapToUsuario(autenticacao);
 
                     db.Usuarios.Add(usuario);
                     await db.SaveChangesAsync();
 
-                    var usuarioResponse = new
-                    {
-                        usuario.IdUsuario,
-                        usuario.Nome,
-                        usuario.TipoDocumento,
-                        usuario.NumDocumento,
-                        usuario.Telefone,
-                        usuario.DataCriacao,
-                        usuario.Status
-                    };
-
-                    return Results.Created($"/usuario/${usuarioResponse.IdUsuario}", usuarioResponse);
+                    return Results.Created($"/usuario/${usuario.IdUsuario}", usuario);
                 })
             .Accepts<UsuarioAndAutenticacaoAddOrUpdateModel>("application/json")
             .Produces<Usuario>(StatusCodes.Status201Created)
@@ -155,41 +113,26 @@ public static class UsuarioEndpoints
                     var usuario = await db.Usuarios.FindAsync(id);
                     if (usuario == null)
                     {
-                        return Results.NotFound();
+                        return Results.NotFound("Usuário não encontrado");
                     }
 
                     var autenticacao = await db.Autenticacoes.FindAsync(usuario.IdAutenticacao);
                     if (autenticacao == null)
                     {
-                        return Results.NotFound();
+                        return Results.NotFound("Autenticação não encontrada");
                     }
 
-                    autenticacao.Email = model.Email;
-                    autenticacao.HashSenha = QuickHash(model.Senha);
+                    autenticacao = model.MapToAutenticacaoUpdate(autenticacao);
+
                     db.Autenticacoes.Update(autenticacao);
                     await db.SaveChangesAsync();
 
-                    usuario.Nome = model.Nome;
-                    usuario.TipoDocumento = model.TipoDocumento;
-                    usuario.NumDocumento = model.NumDocumento;
-                    usuario.Telefone = model.Telefone;
-                    usuario.DataCriacao = model.DataCriacao;
-                    usuario.Status = model.Status;
+                    usuario = model.MapToUsuarioUpdate(usuario);
+
                     db.Usuarios.Update(usuario);
                     await db.SaveChangesAsync();
 
-                    var usuarioResponse = new
-                    {
-                        usuario.IdUsuario,
-                        usuario.Nome,
-                        usuario.TipoDocumento,
-                        usuario.NumDocumento,
-                        usuario.Telefone,
-                        usuario.DataCriacao,
-                        usuario.Status
-                    };
-
-                    return Results.Ok(usuarioResponse);
+                    return Results.Ok(usuario);
                 })
             .Produces<Usuario>()
             .Produces(StatusCodes.Status404NotFound)
@@ -207,13 +150,13 @@ public static class UsuarioEndpoints
                 var usuario = await db.Usuarios.FindAsync(id);
                 if (usuario == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Usuário não encontrado");
                 }
 
                 var autenticacao = await db.Autenticacoes.FindAsync(usuario.IdAutenticacao);
                 if (autenticacao == null)
                 {
-                    return Results.NotFound();
+                    return Results.NotFound("Autenticação não encontrada");
                 }
 
                 db.Autenticacoes.Remove(autenticacao);
