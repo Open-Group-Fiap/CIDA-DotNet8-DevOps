@@ -3,6 +3,7 @@ using CIDA.Api.Models.Metadatas;
 using CIDA.Api.Services;
 using Cida.Data;
 using CIDA.Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -54,17 +55,15 @@ public static class ResumoEndpoints
 
         resumoGroup.MapGet("/email/{email}", async (CidaDbContext db, string email, int page = 1, int pagesize = 30) =>
             {
-                var autenticacaoDb = await db.Autenticacoes.FirstOrDefaultAsync(a => a.Email == email);
-                if (autenticacaoDb == null)
+                var usuario = await db.Usuarios.Where(u => u.Autenticacao.Email == email).FirstOrDefaultAsync();
+
+                if (usuario == null)
                 {
-                    return Results.NotFound("Email de usuário não encontrado");
+                    return Results.NotFound("Email não encontrado");
                 }
 
-                var idUsuario = await db.Usuarios.Where(u => u.IdAutenticacao == autenticacaoDb.IdAutenticacao)
-                    .Select(u => u.IdUsuario).FirstOrDefaultAsync();
 
-
-                var results = await db.Resumos.Where(r => r.IdUsuario == idUsuario).ToListAsync();
+                var results = await db.Resumos.Where(r => r.IdUsuario == usuario.IdUsuario).ToListAsync();
                 return Results.Ok(new ResumosListModel(
                     page,
                     pagesize,
