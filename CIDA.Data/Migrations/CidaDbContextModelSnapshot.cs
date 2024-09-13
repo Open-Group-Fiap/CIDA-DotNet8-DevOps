@@ -3,8 +3,8 @@ using System;
 using Cida.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Oracle.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
@@ -20,49 +20,49 @@ namespace CIDA.Data.Migrations
                 .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("CIDA.Domain.Entities.Arquivo", b =>
                 {
                     b.Property<int>("IdArquivo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_ARQUIVO");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdArquivo"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdArquivo"));
 
                     b.Property<DateTime>("DataUpload")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("TIMESTAMP(7)")
                         .HasColumnName("DATA_UPLOAD");
 
                     b.Property<string>("Extensao")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("EXTENSAO");
 
                     b.Property<int?>("IdResumo")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_RESUMO");
 
                     b.Property<int>("IdUsuario")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_USUARIO");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("NOME");
 
                     b.Property<int>("Tamanho")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("TAMANHO");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("URL");
 
                     b.HasKey("IdArquivo");
@@ -81,21 +81,21 @@ namespace CIDA.Data.Migrations
                 {
                     b.Property<int>("IdAutenticacao")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_AUTENTICACAO");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAutenticacao"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAutenticacao"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("EMAIL");
 
                     b.Property<string>("HashSenha")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("HASH_SENHA");
 
                     b.HasKey("IdAutenticacao");
@@ -110,10 +110,10 @@ namespace CIDA.Data.Migrations
                 {
                     b.Property<int>("IdInsight")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_INSIGHT");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdInsight"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdInsight"));
 
                     b.Property<DateTime>("DataGeracao")
                         .HasColumnType("DATE")
@@ -122,16 +122,16 @@ namespace CIDA.Data.Migrations
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(8000)
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NCLOB")
                         .HasColumnName("DESCRICAO");
 
                     b.Property<int?>("IdResumo")
                         .IsRequired()
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_RESUMO");
 
                     b.Property<int>("IdUsuario")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_USUARIO");
 
                     b.HasKey("IdInsight");
@@ -148,10 +148,10 @@ namespace CIDA.Data.Migrations
                 {
                     b.Property<int>("IdResumo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_RESUMO");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdResumo"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdResumo"));
 
                     b.Property<DateTime>("DataGeracao")
                         .HasColumnType("DATE")
@@ -160,11 +160,11 @@ namespace CIDA.Data.Migrations
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(8000)
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("NCLOB")
                         .HasColumnName("DESCRICAO");
 
                     b.Property<int>("IdUsuario")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_USUARIO");
 
                     b.HasKey("IdResumo");
@@ -178,47 +178,47 @@ namespace CIDA.Data.Migrations
                 {
                     b.Property<int>("IdUsuario")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_USUARIO");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUsuario"));
 
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("DATE")
                         .HasColumnName("DATA_CRIACAO");
 
                     b.Property<int>("IdAutenticacao")
-                        .HasColumnType("int")
+                        .HasColumnType("NUMBER(10)")
                         .HasColumnName("ID_AUTENTICACAO");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("NOME");
 
                     b.Property<string>("NumDocumento")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("NUM_DOCUMENTO");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("STATUS");
 
                     b.Property<string>("Telefone")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
+                        .HasColumnType("NVARCHAR2(255)")
                         .HasColumnName("TELEFONE");
 
                     b.Property<string>("TipoDocumento")
                         .IsRequired()
                         .HasMaxLength(4)
-                        .HasColumnType("nvarchar(4)")
+                        .HasColumnType("NVARCHAR2(4)")
                         .HasColumnName("TIPO_DOCUMENTO");
 
                     b.HasKey("IdUsuario");

@@ -15,10 +15,10 @@ namespace CIDA.Data.Migrations
                 name: "T_OP_AUTENTICACAO",
                 columns: table => new
                 {
-                    ID_AUTENTICACAO = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EMAIL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    HASH_SENHA = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    ID_AUTENTICACAO = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    EMAIL = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false),
+                    HASH_SENHA = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,15 +29,15 @@ namespace CIDA.Data.Migrations
                 name: "T_OP_USUARIO",
                 columns: table => new
                 {
-                    ID_USUARIO = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ID_AUTENTICACAO = table.Column<int>(type: "int", nullable: false),
-                    NOME = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    TIPO_DOCUMENTO = table.Column<string>(type: "nvarchar(4)", maxLength: 4, nullable: false),
-                    NUM_DOCUMENTO = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    TELEFONE = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ID_USUARIO = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    ID_AUTENTICACAO = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    NOME = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false),
+                    TIPO_DOCUMENTO = table.Column<string>(type: "NVARCHAR2(4)", maxLength: 4, nullable: false),
+                    NUM_DOCUMENTO = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false),
+                    TELEFONE = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false),
                     DATA_CRIACAO = table.Column<DateTime>(type: "DATE", nullable: false),
-                    STATUS = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    STATUS = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,11 +54,11 @@ namespace CIDA.Data.Migrations
                 name: "T_OP_RESUMO",
                 columns: table => new
                 {
-                    ID_RESUMO = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ID_USUARIO = table.Column<int>(type: "int", nullable: false),
+                    ID_RESUMO = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    ID_USUARIO = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     DATA_GERACAO = table.Column<DateTime>(type: "DATE", nullable: false),
-                    DESCRICAO = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false)
+                    DESCRICAO = table.Column<string>(type: "NCLOB", maxLength: 8000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,15 +75,15 @@ namespace CIDA.Data.Migrations
                 name: "T_OP_ARQUIVO",
                 columns: table => new
                 {
-                    ID_ARQUIVO = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ID_USUARIO = table.Column<int>(type: "int", nullable: false),
-                    ID_RESUMO = table.Column<int>(type: "int", nullable: true),
-                    NOME = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    EXTENSAO = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    TAMANHO = table.Column<int>(type: "int", nullable: false),
-                    DATA_UPLOAD = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    URL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false)
+                    ID_ARQUIVO = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    ID_USUARIO = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    ID_RESUMO = table.Column<int>(type: "NUMBER(10)", nullable: true),
+                    NOME = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false),
+                    EXTENSAO = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false),
+                    TAMANHO = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    DATA_UPLOAD = table.Column<DateTime>(type: "TIMESTAMP(7)", nullable: false),
+                    URL = table.Column<string>(type: "NVARCHAR2(255)", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -105,12 +105,12 @@ namespace CIDA.Data.Migrations
                 name: "T_OP_INSIGHT",
                 columns: table => new
                 {
-                    ID_INSIGHT = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ID_USUARIO = table.Column<int>(type: "int", nullable: false),
-                    ID_RESUMO = table.Column<int>(type: "int", nullable: false),
+                    ID_INSIGHT = table.Column<int>(type: "NUMBER(10)", nullable: false)
+                        .Annotation("Oracle:Identity", "START WITH 1 INCREMENT BY 1"),
+                    ID_USUARIO = table.Column<int>(type: "NUMBER(10)", nullable: false),
+                    ID_RESUMO = table.Column<int>(type: "NUMBER(10)", nullable: false),
                     DATA_GERACAO = table.Column<DateTime>(type: "DATE", nullable: false),
-                    DESCRICAO = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false)
+                    DESCRICAO = table.Column<string>(type: "NCLOB", maxLength: 8000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,7 +126,7 @@ namespace CIDA.Data.Migrations
                         column: x => x.ID_USUARIO,
                         principalTable: "T_OP_USUARIO",
                         principalColumn: "ID_USUARIO",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -180,6 +180,7 @@ namespace CIDA.Data.Migrations
                 unique: true);
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

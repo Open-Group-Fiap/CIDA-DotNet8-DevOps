@@ -20,13 +20,9 @@ public class Arquivo
     [Column("ID_USUARIO")]
     public int IdUsuario { get; set; }
 
-    public Usuario Usuario { get; set; }
-
     [ForeignKey("Resumo")]
     [Column("ID_RESUMO")]
     public int? IdResumo { get; set; }
-
-    public Resumo Resumo { get; set; }
 
     [Required]
     [Column("NOME")]

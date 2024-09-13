@@ -49,9 +49,4 @@ public class Usuario
     [Column("STATUS")]
     [StringLength(255)]
     public Status Status { get; set; }
-
-    // Relacionamentos
-    public ICollection<Arquivo> Arquivos { get; set; }
-    public ICollection<Resumo> Resumos { get; set; }
-    public ICollection<Insight> Insights { get; set; }
 }

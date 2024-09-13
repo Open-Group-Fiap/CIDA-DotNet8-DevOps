@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace CIDA.Domain.Entities;
+
 // Unique Key Email
 [Index(nameof(Email), IsUnique = true)]
 [Table("T_OP_AUTENTICACAO")]
@@ -22,6 +23,4 @@ public class Autenticacao
     [Column("HASH_SENHA")]
     [StringLength(255)]
     public string HashSenha { get; set; }
-
-    public Usuario Usuario { get; set; }
 }
