@@ -145,17 +145,13 @@ namespace CIDA.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "T_OP_ARQUIVO");
-
-            migrationBuilder.DropTable(
                 name: "T_OP_INSIGHT");
-
             migrationBuilder.DropTable(
                 name: "T_OP_RESUMO");
-
+            migrationBuilder.DropTable(
+                name: "T_OP_ARQUIVO");
             migrationBuilder.DropTable(
                 name: "T_OP_USUARIO");
-
             migrationBuilder.DropTable(
                 name: "T_OP_AUTENTICACAO");
         }

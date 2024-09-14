@@ -74,6 +74,12 @@ app.MapHealthChecks("/api/health", new HealthCheckOptions()
 });
 app.UseHealthChecksUI(options => { options.UIPath = "/healthcheck-ui"; });
 
+
+app.MapGet("/", () =>
+{
+    // redirect to swagger
+    return Results.Redirect("/swagger");
+});
 app.MapUsuarioEndpoints();
 app.MapResumoEndpoints();
 app.MapInsightEndpoints();
