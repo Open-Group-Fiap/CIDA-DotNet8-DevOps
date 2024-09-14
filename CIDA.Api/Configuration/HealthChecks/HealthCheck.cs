@@ -7,12 +7,12 @@ public static class HealthCheck
     public static void ConfigureHealthChecks(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddHealthChecks().AddOracle(
-            configuration.GetConnectionString("FiapOracleConnection") ?? string.Empty,
-            healthQuery: "SELECT 1 FROM DUAL",
-            name: "Oracle Health Check",
+        services.AddHealthChecks().AddSqlServer(
+            configuration.GetConnectionString("AzureConnection") ?? string.Empty,
+            healthQuery: "SELECT 1",
+            name: "SQL Server Health Check",
             failureStatus: HealthStatus.Unhealthy,
-            tags: new[] { "feedback", "database", "oracle" });
+            tags: new[] { "feedback", "database", "sqlserver" });
 
 
         services.AddHealthChecksUI(opt =>

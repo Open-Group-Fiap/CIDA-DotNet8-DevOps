@@ -169,7 +169,6 @@ public static class ArquivoEndpoints
 
                     var arquivos = new List<Arquivo>();
 
-                    var arquivosNomes = new List<string>();
 
                     foreach (var file in arquivosRequest)
                     {
@@ -194,33 +193,14 @@ public static class ArquivoEndpoints
                         };
 
                         arquivos.Add(arquivo);
-                        arquivosNomes.Add(filename);
                     }
 
                     await db.Arquivos.AddRangeAsync(arquivos);
                     await db.SaveChangesAsync();
 
-                    var idsArquivos = arquivos.Select(x => x.IdArquivo).ToList();
-
                     var arquivosResponse = new ArquivosListModel(1, arquivos.Count, arquivos.Count, arquivos);
 
-                    //Send request to analyse (python api)
-                    var urlApi = configuration["PythonApi:Url"];
-                    Console.WriteLine("\n\n\n\n\n\n\n");
-                    Console.WriteLine(containerClient.Uri.AbsoluteUri);
-                    Console.WriteLine("\n\n\n\n\n\n\n");
-                    var response = await httpClient.PostAsJsonAsync($"{urlApi}/analyze", new
-                    {
-                        container = containerClient.Uri.AbsoluteUri,
-                        file_names = arquivosNomes,
-                        id_usuario = idUsuario,
-                        ids_arquivos = idsArquivos
-                    });
-
-
-                    return !response.IsSuccessStatusCode
-                        ? Results.BadRequest("Erro ao enviar arquivos para análise")
-                        : Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
+                    return Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
                 })
             .DisableAntiforgery()
             .Accepts<IFormFileCollection>("multipart/form-data")
