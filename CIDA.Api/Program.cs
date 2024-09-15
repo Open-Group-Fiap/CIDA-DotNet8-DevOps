@@ -14,9 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region Database
 
+var connectionStringSql = Environment.GetEnvironmentVariable("ConnectionStrings__AzureSQLConnection");
+
 builder.Services.AddDbContext<CidaDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("AzureConnection"));
+    options.UseSqlServer(connectionStringSql);
 });
 
 #endregion
@@ -26,8 +28,8 @@ builder.Services.AddDbContext<CidaDbContext>(options =>
 // add singleton azure blob service
 builder.Services.AddSingleton(x =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("AzureStorage");
-    return new BlobServiceClient(connectionString);
+    var connectionStringStore = Environment.GetEnvironmentVariable("ConnectionStrings__AzureStoreConnection");
+    return new BlobServiceClient(connectionStringStore);
 });
 
 #endregion
