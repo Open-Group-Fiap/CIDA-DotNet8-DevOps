@@ -30,10 +30,15 @@
 5. Configurar as variáveis de ambiente:
    - Na seção "Settings" do seu App Service, adicione as seguintes Connection Strings em Enviroment Variables:
      - Chave: `ConnectionStrings__AzureSQLConnection`
+       
        Tipo: SQLAzure
+       
        Valor: [Valor fornecido na entrega]
+       
      - Chave: `ConnectionStrings__AzureStoreConnection`
+       
        Tipo: Custom
+       
        Valor: [Valor fornecido na entrega]
 
 6. Finalizar a criação do App Service e aguardar o deploy ser concluído.
