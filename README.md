@@ -28,10 +28,12 @@
    - Insira o nome da sua imagem: `seu-usuario/cida-api-csharp:latest`
 
 5. Configurar as variáveis de ambiente:
-   - Na seção "Configuration" do seu App Service, adicione as seguintes Application settings:
+   - Na seção "Settings" do seu App Service, adicione as seguintes Connection Strings em Enviroment Variables:
      - Chave: `ConnectionStrings__AzureSQLConnection`
+       Tipo: SQLAzure
        Valor: [Valor fornecido na entrega]
      - Chave: `ConnectionStrings__AzureStoreConnection`
+       Tipo: Custom
        Valor: [Valor fornecido na entrega]
 
 6. Finalizar a criação do App Service e aguardar o deploy ser concluído.
