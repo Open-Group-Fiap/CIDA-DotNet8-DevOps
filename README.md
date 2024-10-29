@@ -7,52 +7,33 @@
 - Maria Eduarda Ferreira da Mata - RM99004
 
 ## Como fazer o deploy
-1. Buildar o Dockerfile:
-   ```
-   docker build -t cida-api-csharp .
-   ```
+1. Configurar o repositório em uma Pipeline do Azure DevOps
+2. Criar uma Pipeline de Build
+3. Implementar o template ASP.NET
+4. Configurar o processo de Token Replace
+5. Configurar no token replace o token como `${}`
+6. Configurar as seguintes variáveis de ambiente:
+    - azureAIConn (URL de conexão do Azure AI)
+    - azureAIKey (Chave de acesso do Azure AI)
+    - azureConnString (String de conexão do Azure SQL)
+    - azureStoreConn (String de conexão do Azure SQL)
+    - geminiApiKey (Chave de acesso da API Gemini)
+    
+    *Observação: As variáveis devem estar dentro de aspas duplas `""`*
 
-2. Fazer push para o Docker Hub:
-   ```
-   docker push seu-usuario/cida-api-csharp:latest
-   ```
-
-3. Abrir o Azure App Services:
-   - Acesse o portal do Azure (https://portal.azure.com)
-   - Navegue até "App Services"
-   - Clique em "Create" ou "Add" para criar um novo App Service
-
-4. Configurar o deploy do container:
-   - Na seção "Publish", selecione "Container"
-   - Escolha "Docker Hub" como Image Source
-   - Insira o nome da sua imagem: `seu-usuario/cida-api-csharp:latest`
-
-5. Configurar as variáveis de ambiente:
-   - Na seção "Settings" do seu App Service, adicione as seguintes Connection Strings em Enviroment Variables:
-     - Chave: `ConnectionStrings__AzureSQLConnection`
-       
-       Tipo: SQLAzure
-       
-       Valor: [Valor fornecido na entrega]
-       
-     - Chave: `ConnectionStrings__AzureStoreConnection`
-       
-       Tipo: Custom
-       
-       Valor: [Valor fornecido na entrega]
-
-6. Finalizar a criação do App Service e aguardar o deploy ser concluído.
-
-Nota: Os valores exatos para as variáveis de ambiente `ConnectionStrings__AzureSQLConnection` e `ConnectionStrings__AzureStoreConnection` foram fornecidos junto com a entrega do projeto.
-
-[Link na Azure](cida-api.azurewebsites.net)
+7. Executar a Pipeline e gerar o artefato
+8. Criar um Web App no Azure
+9. Criar uma Pipeline de Deploy
+10. Importar o artefato gerado na etapa 6
+11. Realizar o Deploy do artefato no Web App
 
 ## Testes
-1. Usar o postman
-2. Importar a Coleção que tem dentro do projeto
-3. Clicar em cima da coleção 'CidaApi'
-4. Clicar na Tab Variables
-5. Alterar a variavel url para o url do deploy na Azure, sem a barra no final (No modelo que estava o localhost que vem por padrão)
-6. Clicar com botão direito do mouse em cima do coleção 'CidaApi' e ir em Run Collection
-7. Dentro de Run Configuration marcar a opção 'Persist responses for a session'
-8. Clicar no botão 'Run CidaApi'
+1. Substituir o arquivo appsettings.json localizado na pasta CIDA.Api com o arquivo de exemplo appsettings.json enviado junto a entrega
+2. Usar o postman
+3. Importar a Coleção que tem dentro do projeto
+4. Clicar em cima da coleção 'CidaApi'
+5. Clicar na Tab Variables
+6. Alterar a variavel url para o url do deploy na Azure, sem a barra no final (No modelo que estava o localhost que vem por padrão)
+7. Clicar com botão direito do mouse em cima do coleção 'CidaApi' e ir em Run Collection
+8. Dentro de Run Configuration marcar a opção 'Persist responses for a session'
+9. Clicar no botão 'Run CidaApi'
