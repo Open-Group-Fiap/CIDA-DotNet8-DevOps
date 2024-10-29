@@ -55,7 +55,7 @@ public class InsightApiTests
     public async Task GetInsightByEmail_ReturnsInsight_WhenInsightExists()
     {
         // Act
-        var response = await _client.GetAsync("/insight/example@example.com");
+        var response = await _client.GetAsync("/insight/email/example@example.com");
 
         // Assert
         response.EnsureSuccessStatusCode();
