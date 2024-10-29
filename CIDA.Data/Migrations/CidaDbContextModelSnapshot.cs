@@ -117,7 +117,7 @@ namespace CIDA.Data.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(8000)
+                        .HasMaxLength(1000000)
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("DESCRICAO");
 
@@ -154,7 +154,7 @@ namespace CIDA.Data.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(8000)
+                        .HasMaxLength(1000000)
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("DESCRICAO");
 

@@ -9,7 +9,7 @@ public static class UsuarioService
     {
         return new Usuario()
         {
-            Nome = model.Nome, DataCriacao = DateTime.Now, NumDocumento = model.NumDocumento, Status = model.Status,
+            Nome = model.Nome, DataCriacao = DateTime.Now, NumDocumento = model.NumDocumento, Status = 0,
             Telefone = model.Telefone, TipoDocumento = model.TipoDocumento, IdAutenticacao = autenticacao.IdAutenticacao
         };
     }

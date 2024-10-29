@@ -52,7 +52,7 @@ namespace CIDA.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ID_USUARIO = table.Column<int>(type: "int", nullable: false),
                     DATA_GERACAO = table.Column<DateTime>(type: "DATE", nullable: false),
-                    DESCRICAO = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false)
+                    DESCRICAO = table.Column<string>(type: "nvarchar(max)", maxLength: 1000000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,7 +93,7 @@ namespace CIDA.Data.Migrations
                     ID_USUARIO = table.Column<int>(type: "int", nullable: false),
                     ID_RESUMO = table.Column<int>(type: "int", nullable: false),
                     DATA_GERACAO = table.Column<DateTime>(type: "DATE", nullable: false),
-                    DESCRICAO = table.Column<string>(type: "nvarchar(max)", maxLength: 8000, nullable: false)
+                    DESCRICAO = table.Column<string>(type: "nvarchar(max)", maxLength: 1000000, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,13 +145,17 @@ namespace CIDA.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "T_OP_ARQUIVO");
+
+            migrationBuilder.DropTable(
                 name: "T_OP_INSIGHT");
+
             migrationBuilder.DropTable(
                 name: "T_OP_RESUMO");
-            migrationBuilder.DropTable(
-                name: "T_OP_ARQUIVO");
+
             migrationBuilder.DropTable(
                 name: "T_OP_USUARIO");
+
             migrationBuilder.DropTable(
                 name: "T_OP_AUTENTICACAO");
         }

@@ -3,6 +3,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using CIDA.Api.Models;
 using CIDA.Api.Models.Metadatas;
+using CIDA.Api.Services;
 using Cida.Data;
 using CIDA.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -59,10 +60,7 @@ public static class ArquivoEndpoints
                 async (CidaDbContext db, string email, int page = 1, int pagesize = 30) =>
                 {
                     var usuario = await db.Usuarios.FirstOrDefaultAsync(x => x.Autenticacao.Email == email);
-                    if (usuario == null)
-                    {
-                        return Results.NotFound("Email do usuário não existe");
-                    }
+                    if (usuario == null) return Results.NotFound("Email do usuário não existe");
 
                     var skip = (page - 1) * pagesize;
 
@@ -94,10 +92,7 @@ public static class ArquivoEndpoints
                     =>
                 {
                     var usuario = await db.Usuarios.FindAsync(id);
-                    if (usuario == null)
-                    {
-                        return Results.NotFound("Id do usuário não existe");
-                    }
+                    if (usuario == null) return Results.NotFound("Id do usuário não existe");
 
                     var skip = (page - 1) * pagesize;
 
@@ -128,37 +123,29 @@ public static class ArquivoEndpoints
 
         arquivoGroup.MapPost("/idUsuario/{idUsuario:int}/upload",
                 async ([Required] IFormFileCollection arquivosRequest, int idUsuario, CidaDbContext db,
-                    BlobServiceClient blobServiceClient, HttpClient httpClient,
-                    IConfiguration configuration) =>
+                    BlobServiceClient blobServiceClient, IConfiguration configuration) =>
                 {
                     //possibles types
                     var possiblesTypes = new List<string>
                     {
-                        "application/msword",
-                        "vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        "application/pdf",
-                        "text/csv"
+                        ".pdf",
+                        ".docx",
+                        ".xlsx",
+                        ".txt",
+                        ".csv"
                     };
 
-                    if (arquivosRequest.Count == 0)
-                    {
-                        return Results.BadRequest("Nenhum arquivo foi enviado");
-                    }
-
+                    if (arquivosRequest.Count == 0) return Results.BadRequest("Nenhum arquivo foi enviado");
+                    if (arquivosRequest.Sum(x => x.Length) > 1073741824)
+                        return Results.BadRequest("Tamanho total dos arquivos excede 1GB");
                     // Designed by the IDE
                     if (arquivosRequest.Any(file =>
-                            !possiblesTypes.Contains(file.ContentType) || file.Length > 2097152))
-                    {
+                            !possiblesTypes.Contains(Path.GetExtension(file.FileName))))
                         return Results.BadRequest("Tipo de arquivo não permitido");
-                    }
 
 
                     var usuario = await db.Usuarios.FindAsync(idUsuario);
-                    if (usuario == null)
-                    {
-                        return Results.BadRequest("Usuario não existe");
-                    }
+                    if (usuario == null) return Results.BadRequest("Usuario não existe");
 
                     //Create a unique name for the container
                     var containerName = "cida-container-" + Guid.NewGuid().ToString("N").ToLower();
@@ -169,6 +156,7 @@ public static class ArquivoEndpoints
 
                     var arquivos = new List<Arquivo>();
 
+                    var arquivosNomes = new List<string>();
 
                     foreach (var file in arquivosRequest)
                     {
@@ -188,19 +176,60 @@ public static class ArquivoEndpoints
                             Nome = filename,
                             Url = blobClient.Uri.ToString(),
                             DataUpload = DateTime.Now,
-                            Extensao = file.ContentType,
-                            Tamanho = (int)file.Length,
+                            Extensao = Path.GetExtension(file.FileName),
+                            Tamanho = (int)file.Length
                         };
 
                         arquivos.Add(arquivo);
+                        arquivosNomes.Add(filename);
                     }
 
-                    await db.Arquivos.AddRangeAsync(arquivos);
-                    await db.SaveChangesAsync();
+                    InsightResumo insightResumo;
+                    try
+                    {
+                        insightResumo =
+                            await InsightResumoService.GenerateInsightResumo(arquivosRequest, configuration);
 
-                    var arquivosResponse = new ArquivosListModel(1, arquivos.Count, arquivos.Count, arquivos);
+                        var resumo = new Resumo
+                        {
+                            IdUsuario = idUsuario,
+                            DataGeracao = DateTime.Now,
+                            Descricao = insightResumo.Resumo
+                        };
 
-                    return Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
+                        await db.Resumos.AddAsync(resumo);
+
+
+                        await db.SaveChangesAsync();
+
+                        var insight = new Insight
+                        {
+                            IdUsuario = idUsuario,
+                            IdResumo = resumo.IdResumo,
+                            DataGeracao = DateTime.Now,
+                            Descricao = insightResumo.Insight
+                        };
+
+                        await db.Insights.AddAsync(insight);
+
+                        await db.SaveChangesAsync();
+
+                        foreach (var file in arquivos)
+                        {
+                            file.IdResumo = resumo.IdResumo;
+                        }
+
+                        await db.Arquivos.AddRangeAsync(arquivos);
+                        await db.SaveChangesAsync();
+
+                        var arquivosResponse = new ArquivosListModel(1, arquivos.Count, arquivos.Count, arquivos);
+
+                        return Results.Created($"/arquivo/idUsuario/{idUsuario}/search", arquivosResponse);
+                    }
+                    catch (Exception e)
+                    {
+                        return Results.BadRequest(e.Message);
+                    }
                 })
             .DisableAntiforgery()
             .Accepts<IFormFileCollection>("multipart/form-data")
@@ -214,16 +243,10 @@ public static class ArquivoEndpoints
         arquivoGroup.MapPut("/{id:int}", async (int id, CidaDbContext db, ArquivoUpdateModel model) =>
             {
                 var resumo = await db.Resumos.FindAsync(model.IdResumo);
-                if (resumo == null)
-                {
-                    return Results.BadRequest("Não existe resumo com o id informado");
-                }
+                if (resumo == null) return Results.BadRequest("Não existe resumo com o id informado");
 
                 var arquivo = await db.Arquivos.FindAsync(id);
-                if (arquivo == null)
-                {
-                    return Results.NotFound("Arquivo não encontrado");
-                }
+                if (arquivo == null) return Results.NotFound("Arquivo não encontrado");
 
                 arquivo.IdResumo = model.IdResumo;
 
@@ -252,10 +275,7 @@ public static class ArquivoEndpoints
                 async (int id, CidaDbContext db, IConfiguration configuration, BlobServiceClient blobServiceClient) =>
                 {
                     var arquivo = await db.Arquivos.FindAsync(id);
-                    if (arquivo == null)
-                    {
-                        return Results.NotFound("Arquivo não encontrado");
-                    }
+                    if (arquivo == null) return Results.NotFound("Arquivo não encontrado");
 
                     // delete container and all blobs
                     var containerName = arquivo.Url.Split('/')[3];

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CIDA.Data.Migrations
 {
     [DbContext(typeof(CidaDbContext))]
-    [Migration("20240914122422_Initial")]
+    [Migration("20241021230230_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -120,7 +120,7 @@ namespace CIDA.Data.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(8000)
+                        .HasMaxLength(1000000)
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("DESCRICAO");
 
@@ -157,7 +157,7 @@ namespace CIDA.Data.Migrations
 
                     b.Property<string>("Descricao")
                         .IsRequired()
-                        .HasMaxLength(8000)
+                        .HasMaxLength(1000000)
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("DESCRICAO");
 

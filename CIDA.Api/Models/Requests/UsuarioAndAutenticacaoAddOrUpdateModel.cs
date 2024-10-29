@@ -10,7 +10,5 @@ public record UsuarioAndAutenticacaoAddOrUpdateModel(
     [Required] string Nome,
     [Required] TipoDocumento TipoDocumento,
     [Required] string NumDocumento,
-    [Required] string Telefone,
-    [Required] DateTime DataCriacao,
-    [Required] Status Status
+    [Required] string Telefone
 );

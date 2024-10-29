@@ -55,10 +55,7 @@ public static class InsightEndpoints
         insightGroup.MapGet("/{email}", async (CidaDbContext db, string email) =>
             {
                 var usuario = await db.Usuarios.FirstOrDefaultAsync(x => x.Autenticacao.Email == email);
-                if (usuario == null)
-                {
-                    return Results.NotFound("Usuário não encontrado");
-                }
+                if (usuario == null) return Results.NotFound("Usuário não encontrado");
 
                 var insight = await db.Insights.FirstOrDefaultAsync(x => x.IdUsuario == usuario.IdUsuario);
 
@@ -83,68 +80,21 @@ public static class InsightEndpoints
 
         #region Commands
 
-        insightGroup.MapPost("/", async (CidaDbContext db, InsightAddOrUpdateModel model) =>
-            {
-                var usuario = await db.Usuarios.FindAsync(model.IdUsuario);
-                if (usuario == null)
-                {
-                    return Results.BadRequest("Usuário não encontrado");
-                }
-
-                var resumo = await db.Resumos.FindAsync(model.IdResumo);
-                if (resumo == null)
-                {
-                    return Results.BadRequest("Resumo não encontrado");
-                }
-
-                var insightDb = await db.Insights.FirstOrDefaultAsync(x => x.IdResumo == model.IdResumo);
-                if (insightDb != null)
-                {
-                    return Results.BadRequest("Já existe um insight para esse resumo");
-                }
-
-                var insight = model.MapToInsight();
-                db.Insights.Add(insight);
-                await db.SaveChangesAsync();
-                return Results.Created($"/insight/{insight.IdInsight}", insight);
-            })
-            .Accepts<InsightAddOrUpdateModel>("application/json")
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces<Insight>(StatusCodes.Status201Created)
-            .WithName("CreateInsight")
-            .WithDescription("Cria um novo insight")
-            .WithMetadata(new SwaggerRequestExampleAttribute(typeof(InsightAddOrUpdateMetadata),
-                typeof(InsightAddOrUpdateMetadata)))
-            .WithTags("Insight")
-            .WithOpenApi();
-
         insightGroup.MapPut("/{id:int}", async (CidaDbContext db, int id, InsightAddOrUpdateModel model) =>
             {
                 var insightDb = await db.Insights.FindAsync(id);
-                if (insightDb == null)
-                {
-                    return Results.NotFound("Insight não encontrado");
-                }
+                if (insightDb == null) return Results.NotFound("Insight não encontrado");
 
                 var usuario = await db.Usuarios.FindAsync(model.IdUsuario);
-                if (usuario == null)
-                {
-                    return Results.BadRequest("Usuário não encontrado");
-                }
+                if (usuario == null) return Results.BadRequest("Usuário não encontrado");
 
                 var resumo = await db.Resumos.FindAsync(model.IdResumo);
-                if (resumo == null)
-                {
-                    return Results.BadRequest("Resumo não encontrado");
-                }
+                if (resumo == null) return Results.BadRequest("Resumo não encontrado");
 
                 if (insightDb.IdResumo != model.IdResumo)
                 {
                     var insightExists = await db.Insights.FirstOrDefaultAsync(x => x.IdResumo == model.IdResumo);
-                    if (insightExists != null)
-                    {
-                        return Results.BadRequest("Já existe um insight para esse resumo");
-                    }
+                    if (insightExists != null) return Results.BadRequest("Já existe um insight para esse resumo");
                 }
 
                 var insight = model.MapToInsightUpdate(insightDb);
@@ -173,10 +123,7 @@ public static class InsightEndpoints
         insightGroup.MapDelete("/{id:int}", async (CidaDbContext db, int id) =>
             {
                 var insight = await db.Insights.FindAsync(id);
-                if (insight == null)
-                {
-                    return Results.NotFound("Insight não encontrado");
-                }
+                if (insight == null) return Results.NotFound("Insight não encontrado");
 
                 db.Insights.Remove(insight);
                 await db.SaveChangesAsync();

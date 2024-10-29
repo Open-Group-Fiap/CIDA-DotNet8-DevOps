@@ -13,9 +13,7 @@ public class UsuarioAndAutenticacaoAddOrUpdateMetadata : IExamplesProvider<Usuar
             "Fulano de Tal",
             0,
             "12345678900",
-            "123456789",
-            DateTime.Now,
-            0
+            "123456789"
         );
     }
 }

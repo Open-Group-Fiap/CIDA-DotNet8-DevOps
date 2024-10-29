@@ -57,10 +57,7 @@ public static class ResumoEndpoints
             {
                 var usuario = await db.Usuarios.Where(u => u.Autenticacao.Email == email).FirstOrDefaultAsync();
 
-                if (usuario == null)
-                {
-                    return Results.NotFound("Email não encontrado");
-                }
+                if (usuario == null) return Results.NotFound("Email não encontrado");
 
 
                 var results = await db.Resumos.Where(r => r.IdUsuario == usuario.IdUsuario).ToListAsync();
@@ -89,37 +86,14 @@ public static class ResumoEndpoints
 
         #region Commands
 
-        resumoGroup.MapPost("/", async (CidaDbContext db, ResumoAddOrUpdateModel model) =>
-            {
-                var resumo = model.MapToInsight();
-
-                db.Resumos.Add(resumo);
-                await db.SaveChangesAsync();
-                return Results.Created($"/resumo/{resumo.IdResumo}", resumo);
-            })
-            .Accepts<ResumoAddOrUpdateModel>("application/json")
-            .Produces<Resumo>(StatusCodes.Status201Created)
-            .WithName("PostResumo")
-            .WithTags("Resumo")
-            .WithDescription("Cria um resumo")
-            .WithMetadata(new SwaggerRequestExampleAttribute(typeof(ResumoAddOrUpdateMetadata),
-                typeof(ResumoAddOrUpdateMetadata)))
-            .WithOpenApi();
-
         resumoGroup.MapPut("/{id:int}", async (CidaDbContext db, int id, ResumoAddOrUpdateModel model) =>
             {
                 var usuario = await db.Usuarios.FindAsync(model.IdUsuario);
-                if (usuario == null)
-                {
-                    return Results.BadRequest("Usuario não encontrado");
-                }
+                if (usuario == null) return Results.BadRequest("Usuario não encontrado");
 
 
                 var resumoDb = await db.Resumos.FindAsync(id);
-                if (resumoDb == null)
-                {
-                    return Results.NotFound("Resumo não encontrado");
-                }
+                if (resumoDb == null) return Results.NotFound("Resumo não encontrado");
 
                 var resumo = model.MapToInsightWithoutDate();
 
@@ -139,10 +113,7 @@ public static class ResumoEndpoints
         resumoGroup.MapDelete("/{id:int}", async (CidaDbContext db, int id) =>
             {
                 var resumo = await db.Resumos.FindAsync(id);
-                if (resumo == null)
-                {
-                    return Results.NotFound("Resumo não encontrado");
-                }
+                if (resumo == null) return Results.NotFound("Resumo não encontrado");
 
                 db.Resumos.Remove(resumo);
                 await db.SaveChangesAsync();

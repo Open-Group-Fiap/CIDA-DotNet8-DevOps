@@ -22,6 +22,6 @@ public class Resumo
 
     [Required]
     [Column("DESCRICAO")]
-    [StringLength(8000)]
+    [StringLength(1000000)]
     public string Descricao { get; set; }
 }

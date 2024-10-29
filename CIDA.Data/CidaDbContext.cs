@@ -33,5 +33,6 @@ public class CidaDbContext : DbContext
         modelBuilder.Entity<Usuario>()
             .Property(u => u.TipoDocumento)
             .HasConversion(converter2);
+        
     }
 }
