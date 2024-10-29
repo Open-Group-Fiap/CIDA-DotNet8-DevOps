@@ -28,11 +28,12 @@
 11. Realizar o Deploy do artefato no Web App
 
 ## Testes
-1. Usar o postman
-2. Importar a Coleção que tem dentro do projeto
-3. Clicar em cima da coleção 'CidaApi'
-4. Clicar na Tab Variables
-5. Alterar a variavel url para o url do deploy na Azure, sem a barra no final (No modelo que estava o localhost que vem por padrão)
-6. Clicar com botão direito do mouse em cima do coleção 'CidaApi' e ir em Run Collection
-7. Dentro de Run Configuration marcar a opção 'Persist responses for a session'
-8. Clicar no botão 'Run CidaApi'
+1. Substituir o arquivo appsettings.json localizado na pasta CIDA.Api com o arquivo de exemplo appsettings.json enviado junto a entrega
+2. Usar o postman
+3. Importar a Coleção que tem dentro do projeto
+4. Clicar em cima da coleção 'CidaApi'
+5. Clicar na Tab Variables
+6. Alterar a variavel url para o url do deploy na Azure, sem a barra no final (No modelo que estava o localhost que vem por padrão)
+7. Clicar com botão direito do mouse em cima do coleção 'CidaApi' e ir em Run Collection
+8. Dentro de Run Configuration marcar a opção 'Persist responses for a session'
+9. Clicar no botão 'Run CidaApi'
