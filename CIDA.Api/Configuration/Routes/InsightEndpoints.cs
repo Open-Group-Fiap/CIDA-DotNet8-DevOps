@@ -97,10 +97,12 @@ public static class InsightEndpoints
                     if (insightExists != null) return Results.BadRequest("Já existe um insight para esse resumo");
                 }
 
-                var insight = model.MapToInsightUpdate(insightDb);
+                insightDb.IdUsuario = model.IdUsuario;
+                insightDb.IdResumo = model.IdResumo;
+                insightDb.Descricao = model.Descricao;
 
                 await db.SaveChangesAsync();
-                return Results.Ok(insight);
+                return Results.Ok(insightDb);
             })
             .Accepts<InsightAddOrUpdateModel>("application/json")
             .Produces(StatusCodes.Status400BadRequest)
