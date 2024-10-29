@@ -7,21 +7,23 @@
 - Maria Eduarda Ferreira da Mata - RM99004
 
 ## Como fazer o deploy
-1. Adicionar o repositorio em uma pipeline do Azure Dev Ops
-2. Criar uma pipeline de build
-3. Utilizar o template do asp.net
-4. adicionar um processo de token replace
-5. Adicionar as seguintes variáveis de ambiente
-    - azureAIConn (Url da Azure AI)
-    - azureAIKey (Key da Azure AI)
-    - azureConnString (Conn string da Azure SQL)
-    - azureStoreConn (Conn string da Azure SQL)
-    - geminiApiKey (Key da API do gemini)
-6. Rodar o pipeline e gerar o artefato
-7. Criar um webapp no Azure
-8. Criar uma pipeline de deploy
-9. Adicionar o artefato gerado no passo 6
-10. Enviar o artefato para o webapp
+1. Configurar o repositório em uma Pipeline do Azure DevOps
+2. Criar uma Pipeline de Build
+3. Implementar o template ASP.NET
+4. Configurar o processo de Token Replace
+5. Configurar no token replace o token como `${}`
+6. Configurar as seguintes variáveis de ambiente:
+    - azureAIConn (URL de conexão do Azure AI)
+    - azureAIKey (Chave de acesso do Azure AI)
+    - azureConnString (String de conexão do Azure SQL)
+    - azureStoreConn (String de conexão do Azure SQL)
+    - geminiApiKey (Chave de acesso da API Gemini)
+    *Observação: As variáveis devem estar dentro de aspas duplas `""`*
+7. Executar a Pipeline e gerar o artefato
+8. Criar um Web App no Azure
+9. Criar uma Pipeline de Deploy
+10. Importar o artefato gerado na etapa 6
+11. Realizar o Deploy do artefato no Web App
 
 ## Testes
 1. Usar o postman
