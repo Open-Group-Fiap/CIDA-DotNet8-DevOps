@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8d13939c-5338-4c7d-9be8-be0c5f86d7ce",
+		"_postman_id": "d660018a-3bf3-47ed-8f66-eb6339e36848",
 		"name": "CidaApi",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "38331263"
+		"_exporter_id": "39359305"
 	},
 	"item": [
 		{
@@ -115,16 +115,69 @@
 			]
 		},
 		{
-			"name": "Resumo",
+			"name": "Arquivo",
 			"item": [
 				{
-					"name": "PostResumo",
+					"name": "PostArquivo",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"type": "file",
+									"src": "postman-cloud:///1ef95e3a-1118-4710-a92d-949abe722959"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/arquivo/idUsuario/1/upload",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"arquivo",
+								"idUsuario",
+								"1",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetArquivo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/arquivo/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"arquivo",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resumo",
+			"item": [
+				{
+					"name": "PutResumo",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"idUsuario\": 1,\r\n  \"descricao\": \"Descrição do resumo\"\r\n}",
+							"raw": "{\r\n    \"idUsuario\": 1,\r\n    \"descricao\": \"Nova descrição atualizada\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -132,12 +185,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/resumo",
+							"raw": "{{url}}/resumo/1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
-								"resumo"
+								"resumo",
+								"1"
 							]
 						}
 					},
@@ -164,8 +218,76 @@
 			]
 		},
 		{
+			"name": "Insight",
+			"item": [
+				{
+					"name": "PutInsight",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"idUsuario\":1, \"idResumo\":1, \"Descricao\": \"Descrição atualizada com sucesso\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/insight/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"insight",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetInsight",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/insight/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"insight",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "After",
 			"item": [
+				{
+					"name": "DeleteInsight",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/insight/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"insight",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
 				{
 					"name": "DeleteResumo",
 					"request": {
@@ -178,6 +300,24 @@
 							],
 							"path": [
 								"resumo",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteArquivo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/arquivo/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"arquivo",
 								"1"
 							]
 						}
@@ -230,7 +370,7 @@
 	"variable": [
 		{
 			"key": "url",
-			"value": "https://cida-api.azurewebsites.net",
+			"value": "http://localhost:5067",
 			"type": "string"
 		}
 	]
