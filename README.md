@@ -7,45 +7,21 @@
 - Maria Eduarda Ferreira da Mata - RM99004
 
 ## Como fazer o deploy
-1. Buildar o Dockerfile:
-   ```
-   docker build -t cida-api-csharp .
-   ```
-
-2. Fazer push para o Docker Hub:
-   ```
-   docker push seu-usuario/cida-api-csharp:latest
-   ```
-
-3. Abrir o Azure App Services:
-   - Acesse o portal do Azure (https://portal.azure.com)
-   - Navegue até "App Services"
-   - Clique em "Create" ou "Add" para criar um novo App Service
-
-4. Configurar o deploy do container:
-   - Na seção "Publish", selecione "Container"
-   - Escolha "Docker Hub" como Image Source
-   - Insira o nome da sua imagem: `seu-usuario/cida-api-csharp:latest`
-
-5. Configurar as variáveis de ambiente:
-   - Na seção "Settings" do seu App Service, adicione as seguintes Connection Strings em Enviroment Variables:
-     - Chave: `ConnectionStrings__AzureSQLConnection`
-       
-       Tipo: SQLAzure
-       
-       Valor: [Valor fornecido na entrega]
-       
-     - Chave: `ConnectionStrings__AzureStoreConnection`
-       
-       Tipo: Custom
-       
-       Valor: [Valor fornecido na entrega]
-
-6. Finalizar a criação do App Service e aguardar o deploy ser concluído.
-
-Nota: Os valores exatos para as variáveis de ambiente `ConnectionStrings__AzureSQLConnection` e `ConnectionStrings__AzureStoreConnection` foram fornecidos junto com a entrega do projeto.
-
-[Link na Azure](cida-api.azurewebsites.net)
+1. Adicionar o repositorio em uma pipeline do Azure Dev Ops
+2. Criar uma pipeline de build
+3. Utilizar o template do asp.net
+4. adicionar um processo de token replace
+5. Adicionar as seguintes variáveis de ambiente
+    - azureAIConn (Url da Azure AI)
+    - azureAIKey (Key da Azure AI)
+    - azureConnString (Conn string da Azure SQL)
+    - azureStoreConn (Conn string da Azure SQL)
+    - geminiApiKey (Key da API do gemini)
+6. Rodar o pipeline e gerar o artefato
+7. Criar um webapp no Azure
+8. Criar uma pipeline de deploy
+9. Adicionar o artefato gerado no passo 6
+10. Enviar o artefato para o webapp
 
 ## Testes
 1. Usar o postman
