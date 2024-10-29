@@ -18,7 +18,9 @@
     - azureConnString (String de conexão do Azure SQL)
     - azureStoreConn (String de conexão do Azure SQL)
     - geminiApiKey (Chave de acesso da API Gemini)
+    
     *Observação: As variáveis devem estar dentro de aspas duplas `""`*
+
 7. Executar a Pipeline e gerar o artefato
 8. Criar um Web App no Azure
 9. Criar uma Pipeline de Deploy
