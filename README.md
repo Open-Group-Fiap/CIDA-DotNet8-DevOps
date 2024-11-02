@@ -6,6 +6,12 @@
 - Leonardo dos Santos Guerra - RM99738
 - Maria Eduarda Ferreira da Mata - RM99004
 
+## Link do Azure Boards
+https://dev.azure.com/RM98638/Pipeline
+
+## Link do web app
+https://cida-api.azurewebsites.net
+
 ## Como fazer o deploy
 1. Configurar o repositório em uma Pipeline do Azure DevOps
 2. Criar uma Pipeline de Build
