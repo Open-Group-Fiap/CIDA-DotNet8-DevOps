@@ -16,7 +16,7 @@
     - azureAIConn (URL de conexão do Azure AI)
     - azureAIKey (Chave de acesso do Azure AI)
     - azureConnString (String de conexão do Azure SQL)
-    - azureStoreConn (String de conexão do Azure SQL)
+    - azureStoreConn (String de conexão do Azure Blob Storage)
     - geminiApiKey (Chave de acesso da API Gemini)
     
     *Observação: As variáveis devem estar dentro de aspas duplas `""`*
