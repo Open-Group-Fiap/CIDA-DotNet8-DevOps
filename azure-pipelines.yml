@@ -1,5 +1,5 @@
 pool:
-  name: Azure Pipelines
+  vmImage: 'windows-latest'
   demands:
     - msbuild
     - visualstudio
@@ -7,7 +7,7 @@ pool:
 
 variables:
   solution: '**\*.sln'
-  ASPNETCORE_ENVIRONMENT: 'Development'  # Added environment variable
+  ASPNETCORE_ENVIRONMENT: 'Development'
 
 steps:
 - task: qetza.replacetokens.replacetokens-task.replacetokens@6
@@ -19,6 +19,10 @@ steps:
     tokenPrefix: '${'
     tokenSuffix: '}'
     escape: off
+
+- script: |
+    cat .\CIDA.Api\appsettings.json
+  displayName: 'Command Line Script'
 
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 6.8'
@@ -57,7 +61,7 @@ steps:
     platform: '$(BuildPlatform)'
     configuration: '$(BuildConfiguration)'
   env:
-    ASPNETCORE_ENVIRONMENT: 'Development'  
+    ASPNETCORE_ENVIRONMENT: 'Development'
 
 - task: PublishSymbols@2
   displayName: 'Publish symbols path'
