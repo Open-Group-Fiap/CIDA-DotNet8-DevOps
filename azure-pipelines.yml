@@ -1,0 +1,73 @@
+pool:
+  name: Azure Pipelines
+  demands:
+    - msbuild
+    - visualstudio
+    - vstest
+
+variables:
+  solution: '**\*.sln'
+
+steps:
+- task: qetza.replacetokens.replacetokens-task.replacetokens@6
+  displayName: 'Replace tokens'
+  inputs:
+    root: CIDA.Api
+    sources: appsettings.json
+    tokenPattern: custom
+    tokenPrefix: '${'
+    tokenSuffix: '}'
+    escape: off
+
+- script: |
+    cat .\CIDA.Api\appsettings.json
+  displayName: 'Command Line Script'
+
+- task: NuGetToolInstaller@0
+  displayName: 'Use NuGet 6.8'
+  inputs:
+    versionSpec: 6.8
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: '$(Parameters.solution)'
+
+- task: VSBuild@1
+  displayName: 'Build solution'
+  inputs:
+    solution: '$(Parameters.solution)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactstagingdirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Run Unit Tests'
+  inputs:
+    command: test
+    projects: '**/*[Tt]ests/*.csproj'
+    arguments: '--configuration $(BuildConfiguration) --collect:"XPlat Code Coverage" -- RunConfiguration.DisableAppDomain=true'
+    publishTestResults: true
+
+- task: VSTest@2
+  displayName: 'Test Assemblies'
+  inputs:
+    testAssemblyVer2: |
+      **\$(BuildConfiguration)\*test*.dll
+      !**\obj\**
+    platform: '$(BuildPlatform)'
+    configuration: '$(BuildConfiguration)'
+
+- task: PublishSymbols@2
+  displayName: 'Publish symbols path'
+  inputs:
+    SearchPattern: '**\bin\**\*.pdb'
+    PublishSymbols: false
+  continueOnError: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: '$(Parameters.ArtifactName)'
+  condition: succeededOrFailed()
